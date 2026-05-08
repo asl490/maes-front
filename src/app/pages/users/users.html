@@ -1,0 +1,136 @@
+<!-- Page Header -->
+<div class="flex items-center justify-between mb-8">
+  <div>
+    <h1 class="text-2xl font-bold text-primary">Users</h1>
+    <p class="text-sm mt-1 text-muted">Manage your team members and their permissions.</p>
+  </div>
+  <button class="btn-primary">
+    <lucide-icon name="user-plus" class="w-4 h-4"></lucide-icon>
+    Invite User
+  </button>
+</div>
+
+  <!-- Stats -->
+  <div class="grid grid-cols-3 gap-5 mb-8">
+    <div class="card p-5 flex flex-col gap-3">
+      <p class="text-sm text-muted">Total Users</p>
+      <p class="text-2xl font-bold text-primary">{{ users().length }}</p>
+      <span class="badge badge-success">↑ +3 this week</span>
+    </div>
+    <div class="card p-5 flex flex-col gap-3">
+      <p class="text-sm text-muted">Active</p>
+      <p class="text-2xl font-bold text-success">4</p>
+      <span class="badge badge-success">Active accounts</span>
+    </div>
+    <div class="card p-5 flex flex-col gap-3">
+      <p class="text-sm text-muted">Pending</p>
+      <p class="text-2xl font-bold text-warning">2</p>
+      <span class="badge badge-warning">Awaiting approval</span>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="card p-4 mb-5 flex flex-col sm:flex-row items-start sm:items-center gap-3">
+    <div class="relative flex-1 w-full sm:max-w-xs">
+      <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-faint" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+      </svg>
+      <input type="text" placeholder="Search users..." class="input-icon"
+        [value]="search()" (input)="setSearch($any($event.target).value)" />
+    </div>
+    <div class="flex items-center gap-2">
+      @for (f of ['all', 'active', 'inactive', 'pending']; track f) {
+        <button (click)="setFilter(f)"
+          [class]="'btn-ghost text-xs px-3 py-1.5 capitalize ' + (filterStatus() === f ? 'badge-primary' : '')">
+          {{ f === 'all' ? 'All' : f.charAt(0).toUpperCase() + f.slice(1) }}
+        </button>
+      }
+    </div>
+    <p class="text-xs sm:ml-auto text-faint">{{ filteredUsers().length }} results</p>
+  </div>
+
+  <!-- Table -->
+  <div class="card overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="w-full">
+        <thead class="table-header">
+          <tr>
+            <th>User</th>
+            <th class="hidden md:table-cell">Role</th>
+            <th>Status</th>
+            <th class="hidden lg:table-cell">Joined</th>
+            <th class="text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @if (loading()) {
+            <tr>
+              <td colspan="5">
+                <app-loading message="Loading users..." />
+              </td>
+            </tr>
+          } @else {
+            @for (user of pagedUsers(); track user.id) {
+              <tr class="table-row">
+                <td class="px-5 py-3.5">
+                  <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0 bg-accent">
+                      {{ user.avatar }}
+                    </div>
+                    <div>
+                      <p class="text-sm font-medium text-primary">{{ user.name }}</p>
+                      <p class="text-xs text-faint">{{ user.email }}</p>
+                    </div>
+                  </div>
+                </td>
+                <td class="px-5 py-3.5 hidden md:table-cell">
+                  <span class="badge badge-info">{{ user.role }}</span>
+                </td>
+                <td class="px-5 py-3.5">
+                <span [class]="'badge ' + (user.status === 'active' ? 'badge-success' : user.status === 'pending' ? 'badge-warning' : 'badge-danger')">
+                  <span class="w-1.5 h-1.5 rounded-full mr-1 inline-block"
+                        [style.background]="user.status === 'active' ? '#4ade80' : user.status === 'pending' ? '#fbbf24' : '#f87171'">
+                  </span>
+                  {{ user.status.charAt(0).toUpperCase() + user.status.slice(1) }}
+                </span>
+                </td>
+                <td class="px-5 py-3.5 hidden lg:table-cell">
+                  <span class="text-sm text-muted">{{ user.joined }}</span>
+                </td>
+                <td class="px-5 py-3.5">
+                  <div class="flex items-center justify-end gap-1">
+                    <button class="btn-action-info" title="Edit" (click)="editUser(user)">
+                      <lucide-icon name="pencil" class="w-3.5 h-3.5"></lucide-icon>
+                    </button>
+                    <button class="btn-action-danger" title="Delete">
+                      <lucide-icon name="trash-2" class="w-3.5 h-3.5"></lucide-icon>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+            @empty {
+              <tr>
+                <td colspan="5" class="px-5 py-12 text-center">
+                  <div class="flex flex-col items-center gap-2">
+                    <svg class="w-10 h-10 text-faint" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    <p class="text-sm text-faint">No users found</p>
+                  </div>
+                </td>
+              </tr>
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+    <app-paginator
+      [page]="page()"
+      [pageSize]="pageSize()"
+      [total]="filteredUsers().length"
+      [pageSizes]="[5, 10, 25]"
+      (pageChange)="page.set($event)"
+      (pageSizeChange)="pageSize.set($event)"
+    />
+  </div>

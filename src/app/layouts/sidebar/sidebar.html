@@ -1,0 +1,216 @@
+<aside
+  [class]="collapsed() ? 'w-[72px]' : 'w-64'"
+  class="relative flex flex-col h-screen transition-all duration-300 ease-in-out shrink-0 z-40 bg-surface"
+  style="border-right:1px solid var(--border);">
+
+  <!-- Logo + Close (móvil) -->
+  <div class="flex items-center h-16 px-4 shrink-0 sep-b">
+    <div class="flex items-center gap-3 overflow-hidden flex-1">
+      <div class="w-8 h-8 rounded-xl flex items-center justify-center shrink-0 bg-accent">
+        <span class="text-white font-bold text-xs tracking-tight">DQ</span>
+      </div>
+      @if (!collapsed()) {
+        <div class="overflow-hidden">
+          <span class="font-bold text-base tracking-tight whitespace-nowrap text-primary">DQ Admin</span>
+          <span class="block text-[10px] font-medium tracking-widest uppercase whitespace-nowrap text-accent">Pro Suite</span>
+        </div>
+      }
+    </div>
+    @if (isMobile()) {
+      <button (click)="closeMobile.emit()" class="btn-icon shrink-0">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    }
+  </div>
+
+  <!-- Navigation -->
+  <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-6">
+    @for (group of navGroups; track group.title) {
+      <div>
+        @if (!collapsed()) {
+          <p class="text-[10px] font-semibold uppercase tracking-widest px-3 mb-2 text-faint">
+            {{ group.title }}
+          </p>
+        } @else {
+          <hr class="divider mb-3" />
+        }
+        <ul class="space-y-0.5">
+          @for (item of group.items; track item.label) {
+            <li>
+
+              <!-- Nivel 1: con hijos -->
+              @if (item.children && item.children.length > 0) {
+                <button
+                  (click)="collapsed() ? null : toggleMenu(item.label)"
+                  [title]="collapsed() ? item.label : ''"
+                  [class]="'nav-link w-full ' + (isOpen(item.label) ? 'text-primary' : '')">
+                  <span class="shrink-0 w-5 h-5 flex items-center justify-center">
+                    <ng-container [ngTemplateOutlet]="iconTpl" [ngTemplateOutletContext]="{icon: item.icon}" />
+                  </span>
+                  @if (!collapsed()) {
+                    <span class="flex-1 truncate text-left">{{ item.label }}</span>
+                    @if (item.badge && !isOpen(item.label)) {
+                      <span [class]="'badge ' + (item.badgeType === 'violet' ? 'badge-primary' : 'badge-info')">
+                        {{ item.badge }}
+                      </span>
+                    }
+                    <svg class="w-3.5 h-3.5 text-faint transition-transform duration-200 shrink-0"
+                      [class.rotate-90]="isOpen(item.label)"
+                      fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                    </svg>
+                  }
+                </button>
+
+                <!-- Nivel 2 -->
+                @if (!collapsed()) {
+                  <ul [class]="'nav-submenu ' + (isOpen(item.label) ? 'open' : '')">
+                    @for (child of item.children; track child.label) {
+                      <li>
+
+                        <!-- Nivel 2: con hijos (tercer nivel) -->
+                        @if (child.children && child.children.length > 0) {
+                          <button
+                            (click)="toggleMenu(item.label + '.' + child.label)"
+                            [class]="'nav-child w-full ' + (isOpen(item.label + '.' + child.label) ? 'text-primary' : '')">
+                            <span class="flex-1 text-left truncate">{{ child.label }}</span>
+                            <svg class="w-3 h-3 text-faint transition-transform duration-200 shrink-0 ml-auto"
+                              [class.rotate-90]="isOpen(item.label + '.' + child.label)"
+                              fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                              <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                            </svg>
+                          </button>
+
+                          <!-- Nivel 3 -->
+                          <ul [class]="'nav-submenu ' + (isOpen(item.label + '.' + child.label) ? 'open' : '')">
+                            @for (grand of child.children; track grand.route) {
+                              <li>
+                                <a [routerLink]="grand.route" routerLinkActive="nav-grandchild-active"
+                                  class="nav-grandchild" (click)="onNavClick()">
+                                  {{ grand.label }}
+                                  @if (grand.badge) {
+                                    <span [class]="'badge ml-auto ' + (grand.badgeType === 'violet' ? 'badge-primary' : 'badge-warning')">
+                                      {{ grand.badge }}
+                                    </span>
+                                  }
+                                </a>
+                              </li>
+                            }
+                          </ul>
+
+                        <!-- Nivel 2: sin hijos (link directo) -->
+                        } @else {
+                          <a [routerLink]="child.route" routerLinkActive="nav-child-active"
+                            class="nav-child" (click)="onNavClick()">
+                            {{ child.label }}
+                            @if (child.badge) {
+                              <span [class]="'badge ml-auto ' + (child.badgeType === 'warning' ? 'badge-warning' : 'badge-primary')">
+                                {{ child.badge }}
+                              </span>
+                            }
+                          </a>
+                        }
+
+                      </li>
+                    }
+                  </ul>
+                }
+
+              <!-- Nivel 1: sin hijos -->
+              } @else {
+                <a [routerLink]="item.route" routerLinkActive="nav-active"
+                  class="nav-link" [title]="collapsed() ? item.label : ''"
+                  (click)="onNavClick()">
+                  <span class="shrink-0 w-5 h-5 flex items-center justify-center">
+                    <ng-container [ngTemplateOutlet]="iconTpl" [ngTemplateOutletContext]="{icon: item.icon}" />
+                  </span>
+                  @if (!collapsed()) {
+                    <span class="flex-1 truncate">{{ item.label }}</span>
+                    @if (item.badge) {
+                      <span [class]="'badge ' + (item.badgeType === 'violet' ? 'badge-primary' : 'badge-info')">
+                        {{ item.badge }}
+                      </span>
+                    }
+                  }
+                </a>
+              }
+
+            </li>
+          }
+        </ul>
+      </div>
+    }
+  </nav>
+
+  <!-- User Profile -->
+  <div class="shrink-0 p-3 sep">
+    <div class="nav-link">
+      <div class="relative shrink-0">
+        <div class="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold bg-accent">
+          {{ user?.avatar }}
+        </div>
+        <span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full border-2"
+          style="background:#4ade80; border-color:var(--bg-surface);"></span>
+      </div>
+      @if (!collapsed()) {
+        <div class="flex-1 min-w-0">
+          <p class="text-sm font-medium truncate text-primary">{{ user?.name }}</p>
+          <p class="text-xs truncate text-faint">{{ user?.role }}</p>
+        </div>
+        <svg class="w-4 h-4 shrink-0 text-faint" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M8 9l4-4 4 4m0 6l-4 4-4-4" />
+        </svg>
+      }
+    </div>
+  </div>
+
+  <!-- Collapse Toggle — solo desktop -->
+  @if (!isMobile()) {
+    <button (click)="toggle()" class="btn-icon absolute -right-3 top-[72px] shadow-lg z-30 card">
+      <svg class="w-3 h-3 transition-transform duration-300" [class.rotate-180]="collapsed()"
+        fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+      </svg>
+    </button>
+  }
+</aside>
+
+<!-- Icon template -->
+<ng-template #iconTpl let-icon="icon">
+  @switch (icon) {
+    @case ('dashboard') {
+      <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M4 5a1 1 0 011-1h4a1 1 0 011 1v5a1 1 0 01-1 1H5a1 1 0 01-1-1V5zm10 0a1 1 0 011-1h4a1 1 0 011 1v2a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1v-4zm10-3a1 1 0 011-1h4a1 1 0 011 1v7a1 1 0 01-1 1h-4a1 1 0 01-1-1v-7z" />
+      </svg>
+    }
+    @case ('analytics') {
+      <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
+      </svg>
+    }
+    @case ('charts') {
+      <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" />
+        <path stroke-linecap="round" stroke-linejoin="round" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" />
+      </svg>
+    }
+    @case ('calendar') {
+      <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+      </svg>
+    }
+    @case ('users') {
+      <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+      </svg>
+    }
+    @case ('settings') {
+      <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.096 2.572-1.065z" />
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+      </svg>
+    }
+  }
+</ng-template>

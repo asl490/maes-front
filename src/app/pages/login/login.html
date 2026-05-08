@@ -1,0 +1,202 @@
+<div class="min-h-screen flex bg-base">
+
+@if (showSplash()) {
+  <app-splash message="Welcome back, David..." />
+}
+
+@if (!showSplash()) {
+
+  <!-- Left Panel -->
+  <div class="hidden lg:flex lg:w-1/2 relative overflow-hidden flex-col justify-between p-12 bg-surface"
+    style="border-right:1px solid var(--border);">
+
+    <div class="absolute inset-0 overflow-hidden pointer-events-none">
+      <div class="absolute -top-40 -left-40 w-96 h-96 rounded-full blur-3xl" style="background:rgba(157,36,73,0.08);"></div>
+      <div class="absolute top-1/2 -right-20 w-80 h-80 rounded-full blur-3xl" style="background:rgba(98,17,50,0.06);"></div>
+      <div class="absolute -bottom-20 left-1/3 w-72 h-72 rounded-full blur-3xl" style="background:rgba(157,36,73,0.05);"></div>
+      <div class="absolute inset-0 opacity-[0.025]"
+        style="background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:40px 40px;">
+      </div>
+    </div>
+
+    <!-- Logo -->
+    <div class="relative flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl flex items-center justify-center bg-accent"
+        style="box-shadow:0 8px 24px rgba(157,36,73,0.3);">
+        <span class="text-white font-bold text-sm tracking-tight">DQ</span>
+      </div>
+      <div>
+        <span class="font-bold text-xl tracking-tight text-primary">DQ Admin</span>
+        <span class="block text-[10px] font-medium tracking-widest uppercase text-accent">Pro Suite</span>
+      </div>
+    </div>
+
+    <!-- Center content -->
+    <div class="relative space-y-8">
+      <div class="space-y-4">
+        <div class="badge badge-primary inline-flex">
+          <span class="w-1.5 h-1.5 rounded-full animate-pulse mr-1 bg-accent"></span>
+          Version 2.0 — Now available
+        </div>
+        <h1 class="text-4xl font-bold leading-tight text-primary">
+          The admin panel<br />
+          <span style="background:linear-gradient(90deg,var(--accent-text),var(--accent)); -webkit-background-clip:text; -webkit-text-fill-color:transparent;">
+            built for speed.
+          </span>
+        </h1>
+        <p class="text-base leading-relaxed max-w-sm text-muted">
+          Manage your business with a powerful, beautiful dashboard. Analytics, users, settings — all in one place.
+        </p>
+      </div>
+      <ul class="space-y-3">
+        @for (feat of [
+          'Real-time analytics & reporting',
+          'Advanced user management',
+          'Role-based access control',
+          'Fully responsive design'
+        ]; track feat) {
+          <li class="flex items-center gap-3">
+            <div class="w-5 h-5 rounded-full flex items-center justify-center shrink-0 badge-primary">
+              <svg class="w-3 h-3 text-accent-text" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <span class="text-sm text-secondary">{{ feat }}</span>
+          </li>
+        }
+      </ul>
+    </div>
+
+    <!-- Author + Testimonial -->
+    <div class="relative">
+      <div class="badge badge-primary inline-flex mb-5">
+        <div class="w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-bold text-white mr-1.5 bg-accent">D</div>
+        Created by <span class="font-semibold ml-1 text-accent-text">David</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Panel -->
+  <div class="flex-1 flex flex-col items-center justify-center px-6 py-12 lg:px-16">
+
+    <!-- Mobile logo -->
+    <div class="lg:hidden flex items-center gap-3 mb-10">
+      <div class="w-9 h-9 rounded-xl flex items-center justify-center bg-accent">
+        <span class="text-white font-bold text-sm tracking-tight">DQ</span>
+      </div>
+      <span class="font-bold text-lg text-primary">Template</span>
+    </div>
+
+    <div class="w-full max-w-sm">
+
+      <div class="mb-8">
+        <h2 class="text-2xl font-bold text-primary">Welcome back</h2>
+        <p class="text-sm mt-1.5 text-muted">Sign in to your account to continue</p>
+      </div>
+
+      <!-- Demo hint -->
+      <button (click)="fillDemo()" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl mb-6 card-elevated btn-ghost">
+        <div class="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 badge-primary">
+          <svg class="w-3.5 h-3.5 text-accent-text" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+          </svg>
+        </div>
+        <div class="text-left flex-1">
+          <p class="text-xs font-semibold text-accent-text">Demo credentials</p>
+          <p class="text-[11px] text-faint">admin&#64;nexadmin.com · admin123</p>
+        </div>
+        <span class="text-xs text-accent">Fill →</span>
+      </button>
+
+      <!-- Form -->
+      <form [formGroup]="form" (ngSubmit)="submit()" class="space-y-4">
+
+        <!-- Email -->
+        <div>
+          <label class="block text-xs font-medium mb-1.5 text-muted">Email address</label>
+          <div class="relative">
+            <div class="absolute left-3 top-1/2 -translate-y-1/2 text-faint">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              </svg>
+            </div>
+            <input type="email" formControlName="email" placeholder="you@example.com"
+              [class]="'input-icon ' + (fieldError('email') ? 'input-error' : '')" />
+          </div>
+          @if (fieldError('email')) {
+            <p class="text-xs text-danger mt-1">{{ fieldError('email') }}</p>
+          }
+        </div>
+
+        <!-- Password -->
+        <div>
+          <div class="flex items-center justify-between mb-1.5">
+            <label class="text-xs font-medium text-muted">Password</label>
+            <button type="button" class="btn-ghost text-xs px-0 py-0 text-accent">Forgot password?</button>
+          </div>
+          <div class="relative">
+            <div class="absolute left-3 top-1/2 -translate-y-1/2 text-faint">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              </svg>
+            </div>
+            <input [type]="showPassword() ? 'text' : 'password'" formControlName="password" placeholder="••••••••"
+              [class]="'input-icon-both ' + (fieldError('password') ? 'input-error' : '')" />
+            <button type="button" (click)="togglePassword()" class="btn-icon absolute right-1 top-1/2 -translate-y-1/2 w-8 h-8">
+              @if (showPassword()) {
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" /></svg>
+              } @else {
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+              }
+            </button>
+          </div>
+          @if (fieldError('password')) {
+            <p class="text-xs text-danger mt-1">{{ fieldError('password') }}</p>
+          }
+        </div>
+
+        <!-- Server error -->
+        @if (serverError()) {
+          <div class="flex items-center gap-2 px-3 py-2.5 rounded-xl badge-danger">
+            <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            <p class="text-xs">{{ serverError() }}</p>
+          </div>
+        }
+
+        <!-- Remember me -->
+        <div class="flex items-center gap-2.5">
+          <button type="button"
+            (click)="form.get('rememberMe')!.setValue(!form.get('rememberMe')!.value)"
+            class="w-4 h-4 rounded flex items-center justify-center transition-all shrink-0"
+            [class]="form.get('rememberMe')!.value ? 'bg-accent' : 'bg-elevated'"
+            style="border:1px solid var(--border);">
+            @if (form.get('rememberMe')!.value) {
+              <svg class="w-2.5 h-2.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+            }
+          </button>
+          <span class="text-sm text-secondary">Remember me for 30 days</span>
+        </div>
+
+        <!-- Submit -->
+        <button type="submit" class="btn-primary w-full justify-center py-2.5 mt-2">
+          Sign in
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+          </svg>
+        </button>
+      </form>
+
+      <div class="text-center mt-8 space-y-1">
+        <p class="text-xs text-faint">© 2025 DQAdmin. All rights reserved.</p>
+        <p class="text-xs text-muted">Designed & built by <span class="font-semibold text-accent">David</span></p>
+      </div>
+
+    </div>
+  </div>
+
+} <!-- end @if (!showSplash()) -->
+</div>

@@ -1,0 +1,52 @@
+<div class="flex flex-col sm:flex-row items-center justify-between gap-4 px-5 py-3 sep">
+
+  <!-- Info + page size -->
+  <div class="flex items-center gap-3">
+    <p class="text-xs text-muted">
+      Showing <span class="font-medium text-primary">{{ from() }}</span>–<span class="font-medium text-primary">{{ to() }}</span>
+      of <span class="font-medium text-primary">{{ total() }}</span> results
+    </p>
+    <div class="w-px h-4" style="background:var(--border);"></div>
+    <div class="flex items-center gap-1.5">
+      <span class="text-xs text-muted">Rows</span>
+      <select class="input text-xs py-1" style="width:auto; padding:0.25rem 0.5rem;"
+        [value]="pageSize()" (change)="onPageSizeChange($event)">
+        @for (s of pageSizes(); track s) {
+          <option [value]="s">{{ s }}</option>
+        }
+      </select>
+    </div>
+  </div>
+
+  <!-- Pages -->
+  <div class="flex items-center gap-1">
+
+    <!-- Prev -->
+    <button (click)="prev()" [disabled]="page() === 1"
+      class="btn-icon w-8 h-8 rounded-lg disabled:opacity-40 disabled:cursor-not-allowed">
+      <lucide-icon name="chevron-left" class="w-4 h-4"></lucide-icon>
+    </button>
+
+    <!-- Page numbers -->
+    @for (p of pages(); track $index) {
+      @if (p === '...') {
+        <span class="w-8 h-8 flex items-center justify-center text-xs text-faint">…</span>
+      } @else {
+        <button (click)="goTo(p)"
+          [class]="'w-8 h-8 rounded-lg text-xs font-medium transition-all ' +
+            (p === page()
+              ? 'bg-accent text-white'
+              : 'btn-icon')">
+          {{ p }}
+        </button>
+      }
+    }
+
+    <!-- Next -->
+    <button (click)="next()" [disabled]="page() === totalPages()"
+      class="btn-icon w-8 h-8 rounded-lg disabled:opacity-40 disabled:cursor-not-allowed">
+      <lucide-icon name="chevron-right" class="w-4 h-4"></lucide-icon>
+    </button>
+
+  </div>
+</div>

@@ -1,0 +1,137 @@
+<!-- Page Header -->
+<div class="flex items-center justify-between mb-8">
+  <div>
+    <h1 class="text-2xl font-bold text-primary">Dashboard</h1>
+    <p class="text-sm mt-1 text-muted">Welcome back, David. Here's what's happening.</p>
+  </div>
+  <div class="flex items-center gap-3">
+    <button class="btn-secondary">
+      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+      </svg>
+      Export
+    </button>
+    <button class="btn-primary">
+      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+      </svg>
+      New Report
+    </button>
+  </div>
+</div>
+
+<!-- KPI Cards -->
+<div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5 mb-8">
+  @for (stat of stats; track stat.label) {
+    <div class="card p-5 flex flex-col gap-3">
+      <div class="flex items-start justify-between">
+        <div class="w-10 h-10 rounded-xl flex items-center justify-center badge-primary">
+          @switch (stat.icon) {
+            @case ('revenue') { <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg> }
+            @case ('users') { <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" /></svg> }
+            @case ('orders') { <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg> }
+            @case ('conversion') { <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg> }
+          }
+        </div>
+        <span [class]="'badge ' + (stat.up ? 'badge-success' : 'badge-danger')">
+          {{ stat.up ? '↑' : '↓' }} {{ stat.change }}
+        </span>
+      </div>
+      <div>
+        <p class="text-2xl font-bold text-primary">{{ stat.value }}</p>
+        <p class="text-sm mt-0.5 text-muted">{{ stat.label }}</p>
+      </div>
+    </div>
+  }
+</div>
+
+<!-- Charts + Activity -->
+<div class="grid grid-cols-1 xl:grid-cols-3 gap-5 mb-8">
+
+  <div class="card p-5 xl:col-span-2">
+    <div class="flex items-center justify-between mb-6">
+      <div>
+        <h2 class="text-base font-semibold text-primary">Revenue Overview</h2>
+        <p class="text-sm mt-0.5 text-muted">Monthly revenue for 2025</p>
+      </div>
+      <div class="flex items-center gap-2">
+        <button class="btn-ghost text-xs px-3 py-1.5 badge-primary">Monthly</button>
+        <button class="btn-ghost text-xs px-3 py-1.5">Yearly</button>
+      </div>
+    </div>
+    <div class="flex items-end gap-2 h-40">
+      @for (h of barHeights; track $index) {
+        <div class="flex-1 flex flex-col items-center gap-1.5">
+          <div class="w-full rounded-t-md transition-all duration-500"
+            [style.height.%]="h"
+            [style.background]="$index === 7 ? 'var(--accent)' : 'var(--bg-overlay)'">
+          </div>
+          <span class="text-[10px] text-faint">{{ months[$index] }}</span>
+        </div>
+      }
+    </div>
+  </div>
+
+  <div class="card p-5">
+    <div class="flex items-center justify-between mb-5">
+      <h2 class="text-base font-semibold text-primary">Recent Activity</h2>
+      <button class="btn-ghost text-xs px-2 py-1 text-accent">View all</button>
+    </div>
+    <ul class="space-y-4">
+      @for (item of activity; track item.user) {
+        <li class="flex items-start gap-3">
+          <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0 bg-accent">
+            {{ item.avatar }}
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-medium truncate text-primary">{{ item.user }}</p>
+            <p class="text-xs truncate text-muted">{{ item.action }}</p>
+            <p class="text-[10px] mt-0.5 text-faint">{{ item.time }}</p>
+          </div>
+        </li>
+      }
+    </ul>
+  </div>
+</div>
+
+<!-- Transactions Table -->
+<div class="card overflow-hidden">
+  <div class="flex items-center justify-between px-5 py-4 sep-b">
+    <div>
+      <h2 class="text-base font-semibold text-primary">Recent Transactions</h2>
+      <p class="text-sm mt-0.5 text-muted">Last 6 transactions</p>
+    </div>
+    <button class="btn-secondary text-xs px-3 py-1.5">View all</button>
+  </div>
+  <div class="overflow-x-auto">
+    <table class="w-full">
+      <thead class="table-header">
+        <tr>
+          <th>Transaction</th>
+          <th>Customer</th>
+          <th class="hidden md:table-cell">Date</th>
+          <th>Amount</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (tx of transactions; track tx.id) {
+          <tr class="table-row">
+            <td class="px-5 py-3.5"><span class="text-sm font-mono text-secondary">{{ tx.id }}</span></td>
+            <td class="px-5 py-3.5">
+              <p class="text-sm font-medium text-primary">{{ tx.customer }}</p>
+              <p class="text-xs text-faint">{{ tx.email }}</p>
+            </td>
+            <td class="px-5 py-3.5 hidden md:table-cell"><span class="text-sm text-muted">{{ tx.date }}</span></td>
+            <td class="px-5 py-3.5"><span class="text-sm font-semibold text-primary">{{ tx.amount }}</span></td>
+            <td class="px-5 py-3.5">
+              <span [class]="'badge ' + (tx.status === 'success' ? 'badge-success' : tx.status === 'pending' ? 'badge-warning' : 'badge-danger')">
+                {{ tx.status }}
+              </span>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

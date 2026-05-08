@@ -1,0 +1,28 @@
+<div class="flex h-screen overflow-hidden bg-base">
+
+  <!-- Overlay móvil -->
+  @if (mobileOpen()) {
+    <div class="fixed inset-0 z-30"
+      style="background:rgba(0,0,0,0.6); backdrop-filter:blur(2px);"
+      (click)="closeMobile()">
+    </div>
+  }
+
+  <!-- Sidebar -->
+  <div class="transition-transform duration-300 ease-in-out"
+    [class]="isMobile()
+      ? 'fixed inset-y-0 left-0 z-40 ' + (mobileOpen() ? 'translate-x-0' : '-translate-x-full')
+      : 'relative'">
+    <app-sidebar [isMobile]="isMobile()" (closeMobile)="closeMobile()" />
+  </div>
+
+  <!-- Contenido principal -->
+  <div class="flex flex-col flex-1 min-w-0 overflow-hidden">
+    <app-header [isMobile]="isMobile()" (menuToggle)="openMobile()" />
+    <main class="flex-1 overflow-y-auto p-4 lg:p-6 bg-base">
+      <router-outlet />
+    </main>
+    <app-footer />
+  </div>
+
+</div>
