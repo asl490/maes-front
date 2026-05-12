@@ -1,0 +1,51 @@
+<div class="step-content">
+  <div class="step-header">
+    <h2 class="step-title">Elige el modelo</h2>
+    <p class="step-subtitle">
+      Modelos disponibles para
+      <span class="highlight">{{ furnitureType?.icon }} {{ furnitureType?.name }}</span>
+    </p>
+  </div>
+
+  <div class="model-grid">
+    <button
+      *ngFor="let model of filteredModels"
+      class="model-card"
+      [class.selected]="selectedModel?.id === model.id"
+      (click)="selectModel(model)"
+      [attr.aria-pressed]="selectedModel?.id === model.id"
+    >
+      <!-- Placeholder visual -->
+      <div class="model-image-area">
+        <div class="model-image-placeholder">
+          <span class="model-type-icon">{{ furnitureType?.icon }}</span>
+          <span class="model-badge">{{ model.name }}</span>
+        </div>
+        <div class="model-selected-overlay" *ngIf="selectedModel?.id === model.id">
+          <div class="model-selected-check">✓</div>
+        </div>
+      </div>
+      <div class="model-info">
+        <h3 class="model-name">{{ model.name }}</h3>
+        <p class="model-desc">{{ model.description }}</p>
+      </div>
+    </button>
+  </div>
+
+  <div class="step-actions">
+    <button class="btn-secondary" (click)="onBack()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <line x1="19" y1="12" x2="5" y2="12"/>
+        <polyline points="12 19 5 12 12 5"/>
+      </svg>
+      Atrás
+    </button>
+    <button class="btn-primary" [disabled]="!selectedModel" (click)="onNext()">
+      Continuar
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <line x1="5" y1="12" x2="19" y2="12"/>
+        <polyline points="12 5 19 12 12 19"/>
+      </svg>
+    </button>
+  </div>
+</div>

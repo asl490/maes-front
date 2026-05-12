@@ -1,0 +1,86 @@
+<div class="demo-page">
+  <!-- Navbar mínimo -->
+  <header class="demo-navbar">
+    <div class="demo-navbar-inner">
+      <a routerLink="/" class="demo-navbar-logo">
+        <img src="/logo.png" alt="Maes IA Logo" />
+      </a>
+      <div class="demo-navbar-title">
+        <span class="demo-navbar-label">Configurador de muebles</span>
+      </div>
+      <a routerLink="/" class="demo-navbar-exit">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+        Salir
+      </a>
+    </div>
+  </header>
+
+  <!-- Contenido principal -->
+  <main class="demo-main">
+    <div class="demo-card" [class.demo-card-summary]="currentStep() === 5">
+
+      <!-- Step indicator (solo steps 1-4) -->
+      @if (currentStep() !== 5) {
+        <app-step-indicator
+          [currentStep]="indicatorStep"
+          (stepClicked)="goToStep($event)"
+        />
+      }
+
+      <!-- Steps -->
+      <div class="demo-step-body">
+
+        @switch (currentStep()) {
+
+          @case (1) {
+            <app-step-furniture-type
+              [selectedType]="selection.furnitureType"
+              (typeSelected)="onTypeSelected($event)"
+              (next)="nextStep()"
+            />
+          }
+
+          @case (2) {
+            <app-step-model
+              [furnitureType]="selection.furnitureType"
+              [selectedModel]="selection.model"
+              (modelSelected)="onModelSelected($event)"
+              (next)="nextStep()"
+              (back)="prevStep()"
+            />
+          }
+
+          @case (3) {
+            <app-step-color
+              [selectedColor]="selection.color"
+              (colorSelected)="onColorSelected($event)"
+              (next)="nextStep()"
+              (back)="prevStep()"
+            />
+          }
+
+          @case (4) {
+            <app-step-dimensions
+              [furnitureType]="selection.furnitureType"
+              [dimensions]="selection.dimensions"
+              (dimensionsChanged)="onDimensionsChanged($event)"
+              (next)="nextStep()"
+              (back)="prevStep()"
+            />
+          }
+
+          @case (5) {
+            <app-step-summary
+              [selection]="selection"
+              (reset)="resetWizard()"
+            />
+          }
+
+        }
+
+      </div>
+    </div>
+  </main>
+</div>

@@ -1,0 +1,112 @@
+<div class="step-content">
+  <div class="step-header">
+    <h2 class="step-title">Ingresa las medidas</h2>
+    <p class="step-subtitle">
+      Todas las medidas en <strong>centímetros (cm)</strong>
+    </p>
+  </div>
+
+  <div class="dimensions-layout">
+    <!-- Formulario -->
+    <div class="dimensions-form">
+      <div class="field-group" *ngFor="let field of dimensionFields">
+        <label class="field-label" [for]="'dim-' + field.key">
+          <span class="field-icon">{{ field.icon }}</span>
+          {{ field.label }}
+        </label>
+        <div class="field-input-wrapper">
+          <input
+            [id]="'dim-' + field.key"
+            type="number"
+            class="field-input"
+            [class.has-value]="dimensions[field.key] !== null && dimensions[field.key] !== undefined"
+            [placeholder]="field.placeholder"
+            [(ngModel)]="dimensions[field.key]"
+            min="1"
+            max="500"
+            (ngModelChange)="onDimensionChange()"
+          />
+          <span class="field-unit">cm</span>
+        </div>
+        <p class="field-hint">{{ field.hint }}</p>
+      </div>
+
+      <!-- Resumen de volumen -->
+      <div class="volume-summary" *ngIf="isComplete()">
+        <div class="volume-label">Volumen aproximado</div>
+        <div class="volume-value">
+          {{ getVolume() }} <span class="volume-unit">cm³</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Diagrama visual -->
+    <div class="dimension-diagram">
+      <div class="diagram-box" [class.diagram-active]="isComplete()">
+        <div class="diagram-labels">
+          <!-- Alto -->
+          <span class="label label-height">
+            {{ dimensions.height ?? '?' }} cm
+          </span>
+          <!-- Ancho -->
+          <span class="label label-width">
+            {{ dimensions.width ?? '?' }} cm
+          </span>
+          <!-- Profundidad -->
+          <span class="label label-depth">
+            {{ dimensions.depth ?? '?' }} cm
+          </span>
+        </div>
+
+        <!-- Caja 3D SVG -->
+        <svg viewBox="0 0 200 180" xmlns="http://www.w3.org/2000/svg" class="box-svg">
+          <!-- Cara frontal -->
+          <polygon points="40,140 160,140 160,50 40,50" fill="#FEF2F2" stroke="#DC2626" stroke-width="2"/>
+          <!-- Cara superior -->
+          <polygon points="40,50 160,50 190,20 70,20" fill="#FEE2E2" stroke="#DC2626" stroke-width="2"/>
+          <!-- Cara lateral -->
+          <polygon points="160,50 190,20 190,110 160,140" fill="#FECACA" stroke="#DC2626" stroke-width="2"/>
+          <!-- Dimensión alto: línea izq -->
+          <line x1="28" y1="50" x2="28" y2="140" stroke="#94A3B8" stroke-width="1.5" stroke-dasharray="4,2"/>
+          <line x1="22" y1="50" x2="34" y2="50" stroke="#94A3B8" stroke-width="1.5"/>
+          <line x1="22" y1="140" x2="34" y2="140" stroke="#94A3B8" stroke-width="1.5"/>
+          <!-- Dimensión ancho: línea abajo -->
+          <line x1="40" y1="152" x2="160" y2="152" stroke="#94A3B8" stroke-width="1.5" stroke-dasharray="4,2"/>
+          <line x1="40" y1="146" x2="40" y2="158" stroke="#94A3B8" stroke-width="1.5"/>
+          <line x1="160" y1="146" x2="160" y2="158" stroke="#94A3B8" stroke-width="1.5"/>
+          <!-- Dimensión profundidad: línea diagonal -->
+          <line x1="168" y1="22" x2="198" y2="22" stroke="#94A3B8" stroke-width="1.5" stroke-dasharray="4,2"/>
+        </svg>
+
+        <div class="diagram-complete" *ngIf="isComplete()">
+          <span>✓ Medidas listas</span>
+        </div>
+      </div>
+
+      <div class="diagram-tip">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="8" x2="12" y2="12"/>
+          <line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        Mide el espacio disponible donde irá ubicado el mueble
+      </div>
+    </div>
+  </div>
+
+  <div class="step-actions">
+    <button class="btn-secondary" (click)="onBack()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <line x1="19" y1="12" x2="5" y2="12"/>
+        <polyline points="12 19 5 12 12 5"/>
+      </svg>
+      Atrás
+    </button>
+    <button class="btn-primary" [disabled]="!isComplete()" (click)="onNext()">
+      Ver resumen
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
+      </svg>
+    </button>
+  </div>
+</div>

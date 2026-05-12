@@ -1,0 +1,126 @@
+.step-indicator-wrapper {
+  padding: 2rem 1.5rem 1.5rem;
+  background: white;
+  border-bottom: 1px solid #e8edf3;
+}
+
+.step-indicator-track {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.step-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.625rem;
+  flex-shrink: 0;
+}
+
+.step-bubble {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.95rem;
+  border: 2.5px solid #CBD5E1;
+  background: white;
+  color: #94A3B8;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: default;
+  position: relative;
+  z-index: 1;
+}
+
+.step-item.active .step-bubble {
+  border-color: #DC2626;
+  background: #DC2626;
+  color: white;
+  box-shadow: 0 0 0 5px rgba(220, 38, 38, 0.15);
+}
+
+.step-item.completed .step-bubble {
+  border-color: #16A34A;
+  background: #16A34A;
+  color: white;
+  cursor: pointer;
+}
+
+.step-item.completed .step-bubble:hover {
+  transform: scale(1.08);
+  box-shadow: 0 0 0 5px rgba(22, 163, 74, 0.15);
+}
+
+.step-number,
+.step-check {
+  line-height: 1;
+}
+
+.step-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.step-label-number {
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: #94A3B8;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.step-item.active .step-label-number {
+  color: #DC2626;
+}
+
+.step-item.completed .step-label-number {
+  color: #16A34A;
+}
+
+.step-label-name {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #94A3B8;
+  white-space: nowrap;
+}
+
+.step-item.active .step-label-name {
+  color: #1E293B;
+}
+
+.step-item.completed .step-label-name {
+  color: #475569;
+}
+
+.step-connector {
+  flex: 1;
+  height: 2.5px;
+  background: #E2E8F0;
+  margin: 0 0.25rem;
+  margin-top: 20px;
+  border-radius: 2px;
+  transition: background 0.4s ease;
+  min-width: 24px;
+}
+
+.step-connector.completed {
+  background: linear-gradient(90deg, #16A34A, #22C55E);
+}
+
+@media (max-width: 480px) {
+  .step-label-name {
+    display: none;
+  }
+  .step-bubble {
+    width: 38px;
+    height: 38px;
+  }
+}

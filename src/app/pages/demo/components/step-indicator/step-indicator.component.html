@@ -1,0 +1,28 @@
+<div class="step-indicator-wrapper">
+  <div class="step-indicator-track">
+    <ng-container *ngFor="let step of steps; let i = index">
+      <!-- Step bubble -->
+      <div
+        class="step-item"
+        [class.active]="currentStep === step.number"
+        [class.completed]="currentStep > step.number"
+      >
+        <div class="step-bubble" (click)="onStepClick(step.number, $event)">
+          <span class="step-check" *ngIf="currentStep > step.number">✓</span>
+          <span class="step-number" *ngIf="currentStep <= step.number">{{ step.number }}</span>
+        </div>
+        <div class="step-label">
+          <span class="step-label-number">Paso {{ step.number }}</span>
+          <span class="step-label-name">{{ step.label }}</span>
+        </div>
+      </div>
+
+      <!-- Connector line -->
+      <div
+        class="step-connector"
+        *ngIf="i < steps.length - 1"
+        [class.completed]="currentStep > step.number"
+      ></div>
+    </ng-container>
+  </div>
+</div>

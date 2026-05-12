@@ -1,0 +1,137 @@
+/* ─── Page layout ──────────────────────────────────────────────────────────── */
+.demo-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #F8FAFC 0%, #EFF6FF 50%, #FEF2F2 100%);
+  display: flex;
+  flex-direction: column;
+  font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+}
+
+/* ─── Navbar ────────────────────────────────────────────────────────────────── */
+.demo-navbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.06);
+}
+
+.demo-navbar-inner {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.demo-navbar-logo img {
+  height: 40px;
+  width: auto;
+}
+
+.demo-navbar-title {
+  flex: 1;
+  text-align: center;
+}
+
+.demo-navbar-label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
+.demo-navbar-exit {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #94A3B8;
+  text-decoration: none;
+  padding: 0.4rem 0.875rem;
+  border-radius: 20px;
+  border: 1.5px solid #E2E8F0;
+  transition: all 0.2s;
+}
+
+.demo-navbar-exit:hover {
+  color: #DC2626;
+  border-color: #FCA5A5;
+  background: #FEF2F2;
+}
+
+/* ─── Main content ──────────────────────────────────────────────────────────── */
+.demo-main {
+  flex: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 2rem 1rem 4rem;
+}
+
+/* ─── Wizard card ───────────────────────────────────────────────────────────── */
+.demo-card {
+  width: 100%;
+  max-width: 900px;
+  background: white;
+  border-radius: 24px;
+  box-shadow:
+    0 4px 6px rgba(0, 0, 0, 0.04),
+    0 20px 60px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  border: 1px solid rgba(226, 232, 240, 0.6);
+  animation: cardIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.demo-card-summary {
+  max-width: 760px;
+}
+
+@keyframes cardIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ─── Step body ─────────────────────────────────────────────────────────────── */
+.demo-step-body {
+  animation: stepFadeIn 0.25s ease;
+}
+
+@keyframes stepFadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* ─── Responsive ────────────────────────────────────────────────────────────── */
+@media (max-width: 600px) {
+  .demo-main {
+    padding: 1rem 0.75rem 3rem;
+  }
+
+  .demo-card {
+    border-radius: 18px;
+  }
+
+  .demo-navbar-label {
+    display: none;
+  }
+}

@@ -45,5 +45,9 @@ export const routes: Routes = [
       },
     ],
   },
+  {
+    path: 'demo',
+    loadComponent: () => import('./pages/demo/demo').then((m) => m.Demo),
+  },
   { path: '**', redirectTo: '' },
 ];
