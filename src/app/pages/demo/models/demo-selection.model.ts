@@ -1,15 +1,16 @@
 export interface FurnitureType {
   id: string;
   name: string;
-  icon: string;
+  imageUrl: string;   // Coloca tu imagen en /public/furniture/<archivo>
   description: string;
+  comingSoon?: boolean;
 }
 
 export interface FurnitureModel {
   id: string;
   name: string;
   description: string;
-  imageUrl: string;
+  imageUrl: string;   // Coloca tu imagen en /public/furniture/models/<archivo>
   furnitureTypeId: string;
 }
 
@@ -35,68 +36,233 @@ export interface DemoSelection {
 }
 
 // ─── Catálogos de datos ───────────────────────────────────────────────────────
+// Imágenes: coloca los archivos en /public/furniture/ y /public/furniture/models/
+// Formato sugerido: WebP o JPG, proporción 4:3 o cuadrada, fondo blanco/neutro.
 
 export const FURNITURE_TYPES: FurnitureType[] = [
   {
     id: 'ropero',
     name: 'Ropero',
-    icon: '🪞',
-    description: 'Roperos de 2, 3 o más puertas con distintos interiores',
+    imageUrl: '/furniture/ropero.webp',
+    description: 'Espacio para almacenamiento de todo tipo de prendas de vestir',
   },
   {
-    id: 'closet',
-    name: 'Clóset',
-    icon: '👗',
-    description: 'Clósets empotrados con división de ropa y accesorios',
+    id: 'repostero',
+    name: 'Repostero de Cocina',
+    imageUrl: '/furniture/repostero.webp',
+    description: 'Organizador y almacenamiento para utensilios de cocina',
+    comingSoon: true,
   },
   {
-    id: 'cocina',
-    name: 'Cocina',
-    icon: '🍳',
-    description: 'Muebles bajos y altos para cocina moderna o clásica',
+    id: 'entretenimiento',
+    name: 'Centro de Entretenimiento',
+    imageUrl: '/furniture/entretenimiento.webp',
+    description: 'Muebles para sala con estética visual moderna',
+    comingSoon: true,
+  },
+  {
+    id: 'zapatero',
+    name: 'Zapatero',
+    imageUrl: '/furniture/zapatero.webp',
+    description: 'Organizador de calzado con diseño funcional',
+    comingSoon: true,
+  },
+  {
+    id: 'comoda',
+    name: 'Cómoda',
+    imageUrl: '/furniture/comoda.webp',
+    description: 'Almacenamiento de prendas de vestir y accesorios',
+    comingSoon: true,
   },
   {
     id: 'escritorio',
     name: 'Escritorio',
-    icon: '💻',
-    description: 'Escritorios de trabajo con cajones y organizadores',
-  },
-  {
-    id: 'biblioteca',
-    name: 'Biblioteca',
-    icon: '📚',
-    description: 'Estantes y bibliotecas a medida para todo tipo de espacio',
-  },
-  {
-    id: 'cama',
-    name: 'Cama',
-    icon: '🛏️',
-    description: 'Bases de cama con cajones o plataforma',
+    imageUrl: '/furniture/escritorio.webp',
+    description: 'Para trabajo de oficina o setup gamer',
+    comingSoon: true,
   },
 ];
 
 export const FURNITURE_MODELS: FurnitureModel[] = [
-  // Roperos
-  { id: 'ropero-2p', name: '2 Puertas Clásico', description: 'Diseño tradicional con espacio amplio para colgar y doblar', imageUrl: '', furnitureTypeId: 'ropero' },
-  { id: 'ropero-3p', name: '3 Puertas con Espejo', description: 'Centro con espejo de cuerpo entero, perfecto para dormitorio', imageUrl: '', furnitureTypeId: 'ropero' },
-  { id: 'ropero-4p', name: '4 Puertas Premium', description: 'Máxima capacidad con cajones internos y zapatera', imageUrl: '', furnitureTypeId: 'ropero' },
-  // Clósets
-  { id: 'closet-lineal', name: 'Lineal Simple', description: 'Distribución lineal optimizada para cuartos medianos', imageUrl: '', furnitureTypeId: 'closet' },
-  { id: 'closet-l', name: 'Forma en L', description: 'Aprovecha las esquinas con módulos en forma de L', imageUrl: '', furnitureTypeId: 'closet' },
-  { id: 'closet-walk-in', name: 'Walk-in Closet', description: 'Clóset caminable con zona central de trabajo', imageUrl: '', furnitureTypeId: 'closet' },
-  // Cocinas
-  { id: 'cocina-bajo', name: 'Solo Bajos', description: 'Muebles bajos con cubierta, lavadero y cajones', imageUrl: '', furnitureTypeId: 'cocina' },
-  { id: 'cocina-completa', name: 'Cocina Completa', description: 'Muebles altos y bajos con campana y alacena', imageUrl: '', furnitureTypeId: 'cocina' },
-  { id: 'cocina-isla', name: 'Con Isla Central', description: 'Diseño moderno con barra o isla de trabajo', imageUrl: '', furnitureTypeId: 'cocina' },
-  // Escritorios
-  { id: 'escritorio-simple', name: 'Escritorio Simple', description: 'Tablero con cajonera lateral para oficina o estudio', imageUrl: '', furnitureTypeId: 'escritorio' },
-  { id: 'escritorio-esquinero', name: 'Escritorio Esquinero', description: 'Forma en L para aprovechar la esquina del cuarto', imageUrl: '', furnitureTypeId: 'escritorio' },
-  // Bibliotecas
-  { id: 'biblioteca-simple', name: 'Biblioteca Simple', description: 'Estantería de 5 paños ideal para libros y decoración', imageUrl: '', furnitureTypeId: 'biblioteca' },
-  { id: 'biblioteca-con-puerta', name: 'Con Puertas Bajas', description: 'Zona alta abierta y zona baja con puertas', imageUrl: '', furnitureTypeId: 'biblioteca' },
-  // Camas
-  { id: 'cama-plataforma', name: 'Base Plataforma', description: 'Base plana sin cajones, minimalista y moderna', imageUrl: '', furnitureTypeId: 'cama' },
-  { id: 'cama-cajones', name: 'Base con Cajones', description: 'Aprovecha el espacio bajo la cama con cajones deslizantes', imageUrl: '', furnitureTypeId: 'cama' },
+  // ─── Ropero ───────────────────────────────────────────────────────────────
+  {
+    id: 'ropero-2p',
+    name: '2 Puertas Clásico',
+    description: 'Diseño sencillo con zona de colgar y repisas interiores',
+    imageUrl: '/furniture/models/ropero-2p.webp',
+    furnitureTypeId: 'ropero',
+  },
+  {
+    id: 'ropero-3p-espejo',
+    name: '3 Puertas con Espejo',
+    description: 'Puerta central con espejo de cuerpo entero, ideal para dormitorio',
+    imageUrl: '/furniture/models/ropero-3p-espejo.webp',
+    furnitureTypeId: 'ropero',
+  },
+  {
+    id: 'ropero-4p',
+    name: '4 Puertas Premium',
+    description: 'Máxima capacidad con cajones internos y zona zapatera',
+    imageUrl: '/furniture/models/ropero-4p.webp',
+    furnitureTypeId: 'ropero',
+  },
+  {
+    id: 'ropero-corredizo',
+    name: 'Puertas Corredizas',
+    description: 'Puertas deslizantes, ahorra espacio en habitaciones pequeñas',
+    imageUrl: '/furniture/models/ropero-corredizo.webp',
+    furnitureTypeId: 'ropero',
+  },
+
+  // ─── Repostero de Cocina ─────────────────────────────────────────────────
+  {
+    id: 'repostero-altos',
+    name: 'Solo Muebles Altos',
+    description: 'Gabinetes altos para almacenamiento sobre el mesón',
+    imageUrl: '/furniture/models/repostero-altos.webp',
+    furnitureTypeId: 'repostero',
+  },
+  {
+    id: 'repostero-bajos',
+    name: 'Solo Muebles Bajos',
+    description: 'Muebles bajos con cubierta, espacio para electrodomésticos',
+    imageUrl: '/furniture/models/repostero-bajos.webp',
+    furnitureTypeId: 'repostero',
+  },
+  {
+    id: 'repostero-completo',
+    name: 'Cocina Completa',
+    description: 'Muebles altos y bajos con campana decorativa y alacena',
+    imageUrl: '/furniture/models/repostero-completo.webp',
+    furnitureTypeId: 'repostero',
+  },
+  {
+    id: 'repostero-isla',
+    name: 'Con Isla Central',
+    description: 'Diseño moderno con barra o isla de preparación',
+    imageUrl: '/furniture/models/repostero-isla.webp',
+    furnitureTypeId: 'repostero',
+  },
+
+  // ─── Centro de Entretenimiento ────────────────────────────────────────────
+  {
+    id: 'entret-simple',
+    name: 'TV Unit Simple',
+    description: 'Mueble bajo para TV con repisas y espacio para equipos',
+    imageUrl: '/furniture/models/entret-simple.webp',
+    furnitureTypeId: 'entretenimiento',
+  },
+  {
+    id: 'entret-estantes',
+    name: 'Con Estantes Laterales',
+    description: 'Panel central TV + estantes laterales para libros y decoración',
+    imageUrl: '/furniture/models/entret-estantes.webp',
+    furnitureTypeId: 'entretenimiento',
+  },
+  {
+    id: 'entret-pared',
+    name: 'Panel de Pared Completo',
+    description: 'Ocupa toda la pared, integra TV, vitrina y almacenamiento',
+    imageUrl: '/furniture/models/entret-pared.webp',
+    furnitureTypeId: 'entretenimiento',
+  },
+  {
+    id: 'entret-vitrina',
+    name: 'Con Vitrina',
+    description: 'Incluye puertas de vidrio para exhibir colecciones o vajilla',
+    imageUrl: '/furniture/models/entret-vitrina.webp',
+    furnitureTypeId: 'entretenimiento',
+  },
+
+  // ─── Zapatero ─────────────────────────────────────────────────────────────
+  {
+    id: 'zapatero-abierto',
+    name: 'Abierto (3 Niveles)',
+    description: 'Repisa escalonada abierta, acceso rápido y ventilado',
+    imageUrl: '/furniture/models/zapatero-abierto.webp',
+    furnitureTypeId: 'zapatero',
+  },
+  {
+    id: 'zapatero-puertas',
+    name: 'Cerrado con Puertas',
+    description: 'Armario zapatero con puertas batientes, estético y ordenado',
+    imageUrl: '/furniture/models/zapatero-puertas.webp',
+    furnitureTypeId: 'zapatero',
+  },
+  {
+    id: 'zapatero-asiento',
+    name: 'Con Banco y Asiento',
+    description: 'Parte superior tapizada para sentarse al calzarse',
+    imageUrl: '/furniture/models/zapatero-asiento.webp',
+    furnitureTypeId: 'zapatero',
+  },
+  {
+    id: 'zapatero-torre',
+    name: 'Torre Zapatera Alta',
+    description: 'Columna estrecha de alta capacidad, ideal para espacios reducidos',
+    imageUrl: '/furniture/models/zapatero-torre.webp',
+    furnitureTypeId: 'zapatero',
+  },
+
+  // ─── Cómoda ───────────────────────────────────────────────────────────────
+  {
+    id: 'comoda-4c',
+    name: '4 Cajones',
+    description: 'Cómoda estándar con 4 cajones de diferente tamaño',
+    imageUrl: '/furniture/models/comoda-4c.webp',
+    furnitureTypeId: 'comoda',
+  },
+  {
+    id: 'comoda-6c',
+    name: '6 Cajones',
+    description: 'Mayor capacidad para organizar ropa y accesorios',
+    imageUrl: '/furniture/models/comoda-6c.webp',
+    furnitureTypeId: 'comoda',
+  },
+  {
+    id: 'comoda-espejo',
+    name: 'Con Espejo Superior',
+    description: 'Cómoda con espejo montado ideal para tocador',
+    imageUrl: '/furniture/models/comoda-espejo.webp',
+    furnitureTypeId: 'comoda',
+  },
+  {
+    id: 'comoda-puertas',
+    name: 'Con Puertas Laterales',
+    description: 'Combinación de cajones centrales y puertas a los costados',
+    imageUrl: '/furniture/models/comoda-puertas.webp',
+    furnitureTypeId: 'comoda',
+  },
+
+  // ─── Escritorio ───────────────────────────────────────────────────────────
+  {
+    id: 'escritorio-simple',
+    name: 'Simple con Cajonera',
+    description: 'Tablero recto con pedestal de cajones lateral',
+    imageUrl: '/furniture/models/escritorio-simple.webp',
+    furnitureTypeId: 'escritorio',
+  },
+  {
+    id: 'escritorio-l',
+    name: 'En L (Esquinero)',
+    description: 'Forma en L para aprovechar la esquina del cuarto',
+    imageUrl: '/furniture/models/escritorio-l.webp',
+    furnitureTypeId: 'escritorio',
+  },
+  {
+    id: 'escritorio-gamer',
+    name: 'Setup Gamer',
+    description: 'Escritorio amplio con gestión de cables y estante para monitores',
+    imageUrl: '/furniture/models/escritorio-gamer.webp',
+    furnitureTypeId: 'escritorio',
+  },
+  {
+    id: 'escritorio-estante',
+    name: 'Con Estante Superior',
+    description: 'Repisa montada sobre el escritorio para libros y pantalla',
+    imageUrl: '/furniture/models/escritorio-estante.webp',
+    furnitureTypeId: 'escritorio',
+  },
 ];
 
 export const MELAMINA_COLORS: MelaminaColor[] = [

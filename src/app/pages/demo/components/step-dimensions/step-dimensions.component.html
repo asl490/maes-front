@@ -2,7 +2,7 @@
   <div class="step-header">
     <h2 class="step-title">Ingresa las medidas</h2>
     <p class="step-subtitle">
-      Todas las medidas en <strong>centímetros (cm)</strong>
+      Todas las medidas en <strong>milímetros (mm)</strong>
     </p>
   </div>
 
@@ -22,20 +22,20 @@
             [class.has-value]="dimensions[field.key] !== null && dimensions[field.key] !== undefined"
             [placeholder]="field.placeholder"
             [(ngModel)]="dimensions[field.key]"
-            min="1"
-            max="500"
+            [min]="field.min"
+            [max]="field.max"
             (ngModelChange)="onDimensionChange()"
           />
-          <span class="field-unit">cm</span>
+          <span class="field-unit">mm</span>
         </div>
-        <p class="field-hint">{{ field.hint }}</p>
+        <p class="field-hint">{{ field.hint }} <br/><small>Rango: {{ field.min }} - {{ field.max }} mm</small></p>
       </div>
 
       <!-- Resumen de volumen -->
       <div class="volume-summary" *ngIf="isComplete()">
         <div class="volume-label">Volumen aproximado</div>
         <div class="volume-value">
-          {{ getVolume() }} <span class="volume-unit">cm³</span>
+          {{ getVolume() }} <span class="volume-unit">mm³</span>
         </div>
       </div>
     </div>
@@ -46,15 +46,15 @@
         <div class="diagram-labels">
           <!-- Alto -->
           <span class="label label-height">
-            {{ dimensions.height ?? '?' }} cm
+            {{ dimensions.height ?? '?' }} mm
           </span>
           <!-- Ancho -->
           <span class="label label-width">
-            {{ dimensions.width ?? '?' }} cm
+            {{ dimensions.width ?? '?' }} mm
           </span>
           <!-- Profundidad -->
           <span class="label label-depth">
-            {{ dimensions.depth ?? '?' }} cm
+            {{ dimensions.depth ?? '?' }} mm
           </span>
         </div>
 

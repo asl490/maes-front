@@ -1,12 +1,12 @@
 .step-content {
   padding: 2.5rem 2rem;
-  max-width: 860px;
+  max-width: 960px;
   margin: 0 auto;
 }
 
 .step-header {
   text-align: center;
-  margin-bottom: 2.5rem;
+  margin-bottom: 2rem;
 }
 
 .step-title {
@@ -22,90 +22,93 @@
   margin: 0;
 }
 
+/* ─── Grid de tarjetas ─────────────────────────────────────────────────── */
 .furniture-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
   margin-bottom: 2.5rem;
 }
 
+/* ─── Tarjeta ──────────────────────────────────────────────────────────── */
 .furniture-card {
   display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 1.25rem;
-  border-radius: 16px;
+  flex-direction: column;
+  border-radius: 18px;
   border: 2px solid #E2E8F0;
   background: white;
   cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
   text-align: left;
-  position: relative;
   overflow: hidden;
-}
-
-.furniture-card::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, #FEF2F2 0%, #FFF5F5 100%);
-  opacity: 0;
-  transition: opacity 0.2s;
+  padding: 0;
 }
 
 .furniture-card:hover {
   border-color: #FCA5A5;
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(220, 38, 38, 0.1);
-}
-
-.furniture-card:hover::before {
-  opacity: 1;
+  transform: translateY(-3px);
+  box-shadow: 0 12px 30px rgba(220, 38, 38, 0.1);
 }
 
 .furniture-card.selected {
   border-color: #DC2626;
-  background: linear-gradient(135deg, #FEF2F2 0%, #FFF5F5 100%);
-  box-shadow: 0 8px 24px rgba(220, 38, 38, 0.15);
+  box-shadow: 0 12px 32px rgba(220, 38, 38, 0.2);
 }
 
-.furniture-card.selected::before {
-  opacity: 1;
-}
-
-.furniture-card-icon {
-  font-size: 2.25rem;
-  line-height: 1;
+/* ─── Área de imagen ───────────────────────────────────────────────────── */
+.furniture-card-image-area {
   position: relative;
-  z-index: 1;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  background: linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%);
+  overflow: hidden;
   flex-shrink: 0;
 }
 
-.furniture-card-body {
-  flex: 1;
-  position: relative;
-  z-index: 1;
+.furniture-card-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transition: transform 0.4s ease;
+  display: block;
 }
 
-.furniture-card-name {
-  font-size: 1rem;
-  font-weight: 700;
-  color: #1E293B;
-  margin: 0 0 0.25rem;
+.furniture-card:hover .furniture-card-image {
+  transform: scale(1.05);
 }
 
-.furniture-card.selected .furniture-card-name {
-  color: #991B1B;
+/* Fallback sin imagen */
+.furniture-card-image-fallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  background: linear-gradient(135deg, #F1F5F9, #E2E8F0);
 }
 
-.furniture-card-desc {
-  font-size: 0.78rem;
-  color: #64748B;
-  margin: 0;
-  line-height: 1.4;
+.fallback-icon {
+  font-size: 2.5rem;
+  line-height: 1;
+  filter: grayscale(0.3);
 }
 
-.furniture-card-check {
+.fallback-label {
+  font-size: 0.65rem;
+  color: #94A3B8;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* Badge de seleccionado */
+.furniture-card-selected-badge {
+  position: absolute;
+  top: 0.625rem;
+  right: 0.625rem;
   width: 28px;
   height: 28px;
   background: #DC2626;
@@ -114,10 +117,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
-  position: relative;
-  z-index: 1;
+  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.4);
   animation: popIn 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 2;
 }
 
 @keyframes popIn {
@@ -125,6 +127,46 @@
   to   { transform: scale(1); opacity: 1; }
 }
 
+/* Overlay sutil en selected */
+.furniture-card.selected .furniture-card-image-area::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(220, 38, 38, 0.06);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ─── Cuerpo de texto ──────────────────────────────────────────────────── */
+.furniture-card-body {
+  padding: 0.875rem 1rem;
+  flex: 1;
+}
+
+.furniture-card-name {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #1E293B;
+  margin: 0 0 0.25rem;
+  line-height: 1.3;
+}
+
+.furniture-card.selected .furniture-card-name {
+  color: #DC2626;
+}
+
+.furniture-card-desc {
+  font-size: 0.75rem;
+  color: #64748B;
+  margin: 0;
+  line-height: 1.45;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ─── Acciones ─────────────────────────────────────────────────────────── */
 .step-actions {
   display: flex;
   justify-content: flex-end;
@@ -160,8 +202,63 @@
   box-shadow: none;
 }
 
-@media (max-width: 600px) {
+/* ─── Responsive ───────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .furniture-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.875rem;
+  }
+}
+
+@media (max-width: 480px) {
   .step-content { padding: 1.5rem 1rem; }
-  .furniture-grid { grid-template-columns: 1fr; }
+  .furniture-grid { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
   .step-title { font-size: 1.4rem; }
+  .furniture-card-body { padding: 0.75rem 0.875rem; }
+}
+
+/* ─── Estado Coming Soon ───────────────────────────────────────────────── */
+.furniture-card.coming-soon {
+  cursor: not-allowed;
+  border-color: #E2E8F0;
+  box-shadow: none;
+  background: #F8FAFC;
+}
+
+.furniture-card.coming-soon:hover {
+  transform: none;
+  border-color: #E2E8F0;
+}
+
+.furniture-card.coming-soon .furniture-card-image {
+  filter: grayscale(1) opacity(0.6);
+}
+
+.furniture-card.coming-soon .furniture-card-name,
+.furniture-card.coming-soon .furniture-card-desc {
+  color: #94A3B8;
+}
+
+.coming-soon-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+
+.coming-soon-badge {
+  background: rgba(0, 0, 0, 0.75);
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.4rem 1rem;
+  border-radius: 20px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  border: 1px solid rgba(255,255,255,0.2);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
 }

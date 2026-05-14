@@ -1,6 +1,6 @@
 .summary-wrapper {
   padding: 2.5rem 2rem;
-  max-width: 720px;
+  max-width: 960px;
   margin: 0 auto;
 }
 
@@ -266,4 +266,100 @@
   .success-title { font-size: 1.4rem; }
   .dimensions-display { gap: 0.5rem; }
   .dim-chip { min-width: 70px; padding: 0.5rem 0.75rem; }
+}
+
+/* ─── Sección Despiece ─────────────────────────────────────────────────── */
+.despiece-header {
+  margin-bottom: 1.25rem;
+}
+
+.despiece-subtitle {
+  font-size: 0.85rem;
+  color: #64748B;
+  margin: 0.25rem 0 0;
+}
+
+.btn-despiece {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: #0F172A;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  width: 100%;
+  justify-content: center;
+}
+
+.btn-despiece:hover {
+  background: #1E293B;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
+}
+
+.despiece-container {
+  margin-top: 1.5rem;
+  animation: slideDown 0.3s ease-out;
+}
+
+.table-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1E293B;
+  margin: 0 0 0.75rem;
+}
+
+.mt-4 { margin-top: 1.5rem; }
+
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: 10px;
+  border: 1px solid #E2E8F0;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+}
+
+.despiece-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+.despiece-table th {
+  background: #F8FAFC;
+  color: #475569;
+  font-weight: 700;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #E2E8F0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 0.7rem;
+}
+
+.despiece-table td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #F1F5F9;
+  color: #1E293B;
+}
+
+.despiece-table tr:last-child td {
+  border-bottom: none;
+}
+
+.despiece-table tbody tr:hover {
+  background: #F8FAFC;
+}
+
+.font-mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-weight: 600;
+  color: #0F172A;
 }

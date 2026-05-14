@@ -9,18 +9,43 @@
       *ngFor="let type of furnitureTypes"
       class="furniture-card"
       [class.selected]="selectedType?.id === type.id"
-      (click)="selectType(type)"
+      [class.coming-soon]="type.comingSoon"
+      (click)="!type.comingSoon && selectType(type)"
       [attr.aria-pressed]="selectedType?.id === type.id"
+      [disabled]="type.comingSoon"
     >
-      <div class="furniture-card-icon">{{ type.icon }}</div>
+      <!-- Imagen del tipo de mueble -->
+      <div class="furniture-card-image-area">
+        <img
+          [src]="type.imageUrl"
+          [alt]="type.name"
+          class="furniture-card-image"
+          loading="lazy"
+          onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'"
+        />
+        <!-- Fallback si no hay imagen -->
+        <div class="furniture-card-image-fallback" style="display:none">
+          <span class="fallback-icon">🪑</span>
+          <span class="fallback-label">Sin imagen</span>
+        </div>
+        
+        <!-- Overlay Coming Soon -->
+        <div class="coming-soon-overlay" *ngIf="type.comingSoon">
+          <div class="coming-soon-badge">Próximamente</div>
+        </div>
+
+        <!-- Badge seleccionado -->
+        <div class="furniture-card-selected-badge" *ngIf="selectedType?.id === type.id">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Texto -->
       <div class="furniture-card-body">
         <h3 class="furniture-card-name">{{ type.name }}</h3>
         <p class="furniture-card-desc">{{ type.description }}</p>
-      </div>
-      <div class="furniture-card-check" *ngIf="selectedType?.id === type.id">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-          <polyline points="20 6 9 17 4 12"/>
-        </svg>
       </div>
     </button>
   </div>
