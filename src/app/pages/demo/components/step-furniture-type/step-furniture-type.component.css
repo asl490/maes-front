@@ -225,7 +225,7 @@
   background: #F8FAFC;
 }
 
-.furniture-card.coming-soon:hover {
+/* .furniture-card.coming-soon:hover {
   transform: none;
   border-color: #E2E8F0;
 }
@@ -237,7 +237,7 @@
 .furniture-card.coming-soon .furniture-card-name,
 .furniture-card.coming-soon .furniture-card-desc {
   color: #94A3B8;
-}
+} */
 
 .coming-soon-overlay {
   position: absolute;

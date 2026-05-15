@@ -66,7 +66,7 @@ export class StepSummaryComponent {
     this.despieceMelamina = [
       {
         id: 1,
-        descripcion: 'Panela',
+        descripcion: this.selection.color?.name,
         color: 'Cuerpo',
         categoria: 'Lateral',
         largo: largoLateralCuerpo + ZOCALO_ALTURA,
@@ -82,7 +82,7 @@ export class StepSummaryComponent {
       },
       {
         id: 2,
-        descripcion: 'Panela',
+        descripcion: this.selection.color?.name,
         color: 'Cuerpo',
         categoria: 'Amarre',
         largo: W - 2 * ESPESOR_MELAMINA,
@@ -98,7 +98,7 @@ export class StepSummaryComponent {
       },
       {
         id: 3,
-        descripcion: 'Panela',
+        descripcion: this.selection.color?.name,
         color: 'Zocalo',
         categoria: 'Zocalo',
         largo: W - 2 * ESPESOR_MELAMINA,
@@ -114,7 +114,7 @@ export class StepSummaryComponent {
       },
       {
         id: 4,
-        descripcion: 'Panela',
+        descripcion: this.selection.color?.name,
         color: 'Techo',
         categoria: 'Lateral',
         largo: H - (largoLateralCuerpo + ZOCALO_ALTURA),
@@ -130,7 +130,7 @@ export class StepSummaryComponent {
       },
       {
         id: 5,
-        descripcion: 'Panela',
+        descripcion: this.selection.color?.name,
         color: 'Techo',
         categoria: 'Amarre',
         largo: W - 2 * ESPESOR_MELAMINA,
@@ -146,7 +146,7 @@ export class StepSummaryComponent {
       },
       {
         id: 6,
-        descripcion: 'Panela',
+        descripcion: this.selection.color?.name,
         color: 'Puerta',
         categoria: 'Superior',
         largo: H - largoLateralCuerpo - ZOCALO_ALTURA - 8 + ESPESOR_MELAMINA / 2,
@@ -162,7 +162,7 @@ export class StepSummaryComponent {
       },
       {
         id: 7,
-        descripcion: 'Panela',
+        descripcion: this.selection.color?.name,
         color: 'Puerta',
         categoria: 'Cuerpo',
         largo: largoLateralCuerpo - 8 - ESPESOR_MELAMINA / 2,
@@ -185,7 +185,7 @@ export class StepSummaryComponent {
         color: 'Superior',
         categoria: '',
         pieza: '',
-        largo: largoMdfSuperior,
+        largo: H - largoLateralCuerpo - ZOCALO_ALTURA - 1,
         anchura: anchoMdf,
         cantidad: 1,
         veta: '',
@@ -202,7 +202,7 @@ export class StepSummaryComponent {
         color: 'Cuerpo',
         categoria: '',
         pieza: '',
-        largo: largoMdfCuerpo,
+        largo: largoLateralCuerpo - 1,
         anchura: anchoMdf,
         cantidad: 1,
         veta: '',
