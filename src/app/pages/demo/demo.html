@@ -54,6 +54,7 @@
 
           @case (3) {
             <app-step-color
+              [selectedModel]="selection.model"
               [selectedColor]="selection.color"
               (colorSelected)="onColorSelected($event)"
               (next)="nextStep()"

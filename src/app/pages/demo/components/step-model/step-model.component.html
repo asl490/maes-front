@@ -12,8 +12,10 @@
       *ngFor="let model of filteredModels"
       class="model-card"
       [class.selected]="selectedModel?.id === model.id"
-      (click)="selectModel(model)"
+      [class.coming-soon]="model.comingSoon"
+      (click)="!model.comingSoon && selectModel(model)"
       [attr.aria-pressed]="selectedModel?.id === model.id"
+      [disabled]="model.comingSoon"
     >
       <!-- Imagen del modelo -->
       <div class="model-image-area">
@@ -27,6 +29,10 @@
         <!-- Fallback si no hay imagen -->
         <div class="model-image-fallback" style="display:none">
           <span class="fallback-icon">🪑</span>
+        </div>
+        <!-- Coming soon overlay -->
+        <div class="coming-soon-overlay" *ngIf="model.comingSoon">
+          <span class="coming-soon-badge">Próximamente</span>
         </div>
         <!-- Badge seleccionado -->
         <div class="model-selected-badge" *ngIf="selectedModel?.id === model.id">

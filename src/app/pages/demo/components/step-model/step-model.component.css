@@ -30,8 +30,8 @@
 /* ─── Grid de modelos ──────────────────────────────────────────────────── */
 .model-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1rem;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
   margin-bottom: 2.5rem;
 }
 
@@ -58,6 +58,17 @@
 .model-card.selected {
   border-color: #DC2626;
   box-shadow: 0 10px 28px rgba(220, 38, 38, 0.2);
+}
+
+.model-card.coming-soon {
+  cursor: not-allowed;
+  border-color: #E2E8F0;
+  opacity: 0.9;
+}
+
+.model-card.coming-soon:hover {
+  transform: none;
+  box-shadow: none;
 }
 
 /* ─── Área de imagen ───────────────────────────────────────────────────── */
@@ -128,6 +139,30 @@
   background: rgba(220, 38, 38, 0.06);
   pointer-events: none;
   z-index: 1;
+}
+
+/* Coming soon overlay */
+.coming-soon-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(166, 172, 185, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+
+.coming-soon-badge {
+  background: rgba(0, 0, 0, 0.75);
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.4rem 1rem;
+  border-radius: 20px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  border: 1px solid rgba(255,255,255,0.2);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
 }
 
 /* ─── Info del modelo ──────────────────────────────────────────────────── */

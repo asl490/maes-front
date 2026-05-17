@@ -12,6 +12,7 @@ export interface FurnitureModel {
   description: string;
   imageUrl: string; // Coloca tu imagen en /publicfurniture/models/<archivo>
   furnitureTypeId: string;
+  comingSoon?: boolean;
 }
 
 export interface MelaminaColor {
@@ -20,6 +21,8 @@ export interface MelaminaColor {
   hex: string;
   texture?: string;
   category: 'Neutros' | 'Madera' | 'Colores';
+  imageUrl?: string;
+  available?: boolean;
 }
 
 export interface DemoDimensions {
@@ -45,6 +48,7 @@ export const FURNITURE_TYPES: FurnitureType[] = [
     name: 'Ropero',
     imageUrl: 'furniture/ropero.webp',
     description: 'Espacio para almacenamiento de todo tipo de prendas de vestir',
+    comingSoon: false,
   },
   {
     id: 'repostero',
@@ -91,6 +95,7 @@ export const FURNITURE_MODELS: FurnitureModel[] = [
     description: 'Diseño sencillo con zona de colgar y repisas interiores',
     imageUrl: 'furniture/models/r_clasico.webp',
     furnitureTypeId: 'ropero',
+    comingSoon: false,
   },
   {
     id: 'ropero-3p-espejo',
@@ -98,6 +103,7 @@ export const FURNITURE_MODELS: FurnitureModel[] = [
     description: 'Puerta central con espejo de cuerpo entero, ideal para dormitorio',
     imageUrl: 'furniture/models/r_standar.webp',
     furnitureTypeId: 'ropero',
+    comingSoon: true,
   },
   {
     id: 'ropero-4p',
@@ -105,6 +111,7 @@ export const FURNITURE_MODELS: FurnitureModel[] = [
     description: 'Máxima capacidad con cajones internos y zona zapatera',
     imageUrl: 'furniture/models/r_premium.webp',
     furnitureTypeId: 'ropero',
+    comingSoon: true,
   },
   {
     id: 'ropero-corredizo',
@@ -112,6 +119,7 @@ export const FURNITURE_MODELS: FurnitureModel[] = [
     description: 'Puertas deslizantes, ahorra espacio en habitaciones pequeñas',
     imageUrl: 'furniture/models/r_corredizo.webp',
     furnitureTypeId: 'ropero',
+    comingSoon: true,
   },
 
   // ─── Repostero de Cocina ─────────────────────────────────────────────────
@@ -121,6 +129,7 @@ export const FURNITURE_MODELS: FurnitureModel[] = [
     description: 'Gabinetes altos para almacenamiento sobre el mesón',
     imageUrl: 'furniture/models/repostero-altos.webp',
     furnitureTypeId: 'repostero',
+    comingSoon: true,
   },
   {
     id: 'repostero-bajos',
@@ -128,6 +137,7 @@ export const FURNITURE_MODELS: FurnitureModel[] = [
     description: 'Muebles bajos con cubierta, espacio para electrodomésticos',
     imageUrl: 'furniture/models/repostero-bajos.webp',
     furnitureTypeId: 'repostero',
+    comingSoon: true,
   },
   {
     id: 'repostero-completo',
@@ -135,6 +145,7 @@ export const FURNITURE_MODELS: FurnitureModel[] = [
     description: 'Muebles altos y bajos con campana decorativa y alacena',
     imageUrl: 'furniture/models/repostero-completo.webp',
     furnitureTypeId: 'repostero',
+    comingSoon: true,
   },
   {
     id: 'repostero-isla',
@@ -142,6 +153,7 @@ export const FURNITURE_MODELS: FurnitureModel[] = [
     description: 'Diseño moderno con barra o isla de preparación',
     imageUrl: 'furniture/models/repostero-isla.webp',
     furnitureTypeId: 'repostero',
+    comingSoon: true,
   },
 
   // ─── Centro de Entretenimiento ────────────────────────────────────────────
@@ -151,6 +163,7 @@ export const FURNITURE_MODELS: FurnitureModel[] = [
     description: 'Mueble bajo para TV con repisas y espacio para equipos',
     imageUrl: 'furniture/models/entret-simple.webp',
     furnitureTypeId: 'entretenimiento',
+    comingSoon: true,
   },
   {
     id: 'entret-estantes',
@@ -158,6 +171,7 @@ export const FURNITURE_MODELS: FurnitureModel[] = [
     description: 'Panel central TV + estantes laterales para libros y decoración',
     imageUrl: 'furniture/models/entret-estantes.webp',
     furnitureTypeId: 'entretenimiento',
+    comingSoon: true,
   },
   {
     id: 'entret-pared',
@@ -165,6 +179,7 @@ export const FURNITURE_MODELS: FurnitureModel[] = [
     description: 'Ocupa toda la pared, integra TV, vitrina y almacenamiento',
     imageUrl: 'furniture/models/entret-pared.webp',
     furnitureTypeId: 'entretenimiento',
+    comingSoon: true,
   },
   {
     id: 'entret-vitrina',
@@ -172,6 +187,7 @@ export const FURNITURE_MODELS: FurnitureModel[] = [
     description: 'Incluye puertas de vidrio para exhibir colecciones o vajilla',
     imageUrl: 'furniture/models/entret-vitrina.webp',
     furnitureTypeId: 'entretenimiento',
+    comingSoon: true,
   },
 
   // ─── Zapatero ─────────────────────────────────────────────────────────────
@@ -181,6 +197,7 @@ export const FURNITURE_MODELS: FurnitureModel[] = [
     description: 'Repisa escalonada abierta, acceso rápido y ventilado',
     imageUrl: 'furniture/models/zapatero-abierto.webp',
     furnitureTypeId: 'zapatero',
+    comingSoon: true,
   },
   {
     id: 'zapatero-puertas',
@@ -188,6 +205,7 @@ export const FURNITURE_MODELS: FurnitureModel[] = [
     description: 'Armario zapatero con puertas batientes, estético y ordenado',
     imageUrl: 'furniture/models/zapatero-puertas.webp',
     furnitureTypeId: 'zapatero',
+    comingSoon: true,
   },
   {
     id: 'zapatero-asiento',
@@ -195,6 +213,7 @@ export const FURNITURE_MODELS: FurnitureModel[] = [
     description: 'Parte superior tapizada para sentarse al calzarse',
     imageUrl: 'furniture/models/zapatero-asiento.webp',
     furnitureTypeId: 'zapatero',
+    comingSoon: true,
   },
   {
     id: 'zapatero-torre',
@@ -202,6 +221,7 @@ export const FURNITURE_MODELS: FurnitureModel[] = [
     description: 'Columna estrecha de alta capacidad, ideal para espacios reducidos',
     imageUrl: 'furniture/models/zapatero-torre.webp',
     furnitureTypeId: 'zapatero',
+    comingSoon: true,
   },
 
   // ─── Cómoda ───────────────────────────────────────────────────────────────
@@ -211,6 +231,7 @@ export const FURNITURE_MODELS: FurnitureModel[] = [
     description: 'Cómoda estándar con 4 cajones de diferente tamaño',
     imageUrl: 'furniture/models/comoda-4c.webp',
     furnitureTypeId: 'comoda',
+    comingSoon: true,
   },
   {
     id: 'comoda-6c',
@@ -218,6 +239,7 @@ export const FURNITURE_MODELS: FurnitureModel[] = [
     description: 'Mayor capacidad para organizar ropa y accesorios',
     imageUrl: 'furniture/models/comoda-6c.webp',
     furnitureTypeId: 'comoda',
+    comingSoon: true,
   },
   {
     id: 'comoda-espejo',
@@ -225,6 +247,7 @@ export const FURNITURE_MODELS: FurnitureModel[] = [
     description: 'Cómoda con espejo montado ideal para tocador',
     imageUrl: 'furniture/models/comoda-espejo.webp',
     furnitureTypeId: 'comoda',
+    comingSoon: true,
   },
   {
     id: 'comoda-puertas',
@@ -232,6 +255,7 @@ export const FURNITURE_MODELS: FurnitureModel[] = [
     description: 'Combinación de cajones centrales y puertas a los costados',
     imageUrl: 'furniture/models/comoda-puertas.webp',
     furnitureTypeId: 'comoda',
+    comingSoon: true,
   },
 
   // ─── Escritorio ───────────────────────────────────────────────────────────
@@ -241,6 +265,7 @@ export const FURNITURE_MODELS: FurnitureModel[] = [
     description: 'Tablero recto con pedestal de cajones lateral',
     imageUrl: 'furniture/models/escritorio-simple.webp',
     furnitureTypeId: 'escritorio',
+    comingSoon: true,
   },
   {
     id: 'escritorio-l',
@@ -248,6 +273,7 @@ export const FURNITURE_MODELS: FurnitureModel[] = [
     description: 'Forma en L para aprovechar la esquina del cuarto',
     imageUrl: 'furniture/models/escritorio-l.webp',
     furnitureTypeId: 'escritorio',
+    comingSoon: true,
   },
   {
     id: 'escritorio-gamer',
@@ -255,6 +281,7 @@ export const FURNITURE_MODELS: FurnitureModel[] = [
     description: 'Escritorio amplio con gestión de cables y estante para monitores',
     imageUrl: 'furniture/models/escritorio-gamer.webp',
     furnitureTypeId: 'escritorio',
+    comingSoon: true,
   },
   {
     id: 'escritorio-estante',
@@ -262,26 +289,76 @@ export const FURNITURE_MODELS: FurnitureModel[] = [
     description: 'Repisa montada sobre el escritorio para libros y pantalla',
     imageUrl: 'furniture/models/escritorio-estante.webp',
     furnitureTypeId: 'escritorio',
+    comingSoon: true,
   },
 ];
 
 export const MELAMINA_COLORS: MelaminaColor[] = [
   // Neutros
-  { id: 'blanco', name: 'Blanco Nieve', hex: '#F8F8F8', category: 'Neutros' },
-  { id: 'gris-perla', name: 'Gris Perla', hex: '#D9D9D9', category: 'Neutros' },
-  { id: 'gris-oscuro', name: 'Gris Antracita', hex: '#4A4A4A', category: 'Neutros' },
-  { id: 'negro', name: 'Negro Grafito', hex: '#1C1C1C', category: 'Neutros' },
-  { id: 'crema', name: 'Crema', hex: '#F5ECD7', category: 'Neutros' },
+  {
+    id: 'blanco',
+    name: 'Blanco Nieve',
+    hex: '#F8F8F8',
+    category: 'Neutros',
+    imageUrl: 'furniture/colors/blanco.webp',
+    available: true,
+  },
+  {
+    id: 'nacar',
+    name: 'Nácar',
+    hex: '#EBE5D9',
+    category: 'Neutros',
+    imageUrl: 'furniture/colors/nacar.webp',
+    available: true,
+  },
+  { id: 'gris-perla', name: 'Gris Perla', hex: '#D9D9D9', category: 'Neutros', available: false },
+  {
+    id: 'gris-oscuro',
+    name: 'Gris Antracita',
+    hex: '#4A4A4A',
+    category: 'Neutros',
+    available: false,
+  },
+  { id: 'negro', name: 'Negro Grafito', hex: '#1C1C1C', category: 'Neutros', available: false },
   // Madera
-  { id: 'roble-claro', name: 'Roble Claro', hex: '#C8A882', category: 'Madera' },
-  { id: 'roble-oscuro', name: 'Roble Oscuro', hex: '#7B5135', category: 'Madera' },
-  { id: 'nogal', name: 'Nogal', hex: '#5C3D2E', category: 'Madera' },
-  { id: 'pino', name: 'Pino Natural', hex: '#D4A96A', category: 'Madera' },
-  { id: 'wengue', name: 'Wengué', hex: '#3B2314', category: 'Madera' },
-  { id: 'cedro', name: 'Cedro', hex: '#8B4513', category: 'Madera' },
+  {
+    id: 'bellota',
+    name: 'Bellota',
+    hex: '#8B5A2B',
+    category: 'Madera',
+    imageUrl: 'furniture/colors/bellota.webp',
+    available: true,
+  },
+  {
+    id: 'cedro',
+    name: 'Cedro',
+    hex: '#8B4513',
+    category: 'Madera',
+    imageUrl: 'furniture/colors/cedro.webp',
+    available: true,
+  },
+  {
+    id: 'panela',
+    name: 'Panela',
+    hex: '#D4A96A',
+    category: 'Madera',
+    imageUrl: 'furniture/colors/panela.webp',
+    available: true,
+  },
+  { id: 'roble-claro', name: 'Roble Claro', hex: '#C8A882', category: 'Madera', available: false },
+  {
+    id: 'roble-oscuro',
+    name: 'Roble Oscuro',
+    hex: '#7B5135',
+    category: 'Madera',
+    available: false,
+  },
+  { id: 'nogal', name: 'Nogal', hex: '#5C3D2E', category: 'Madera', available: false },
+  { id: 'pino', name: 'Pino Natural', hex: '#D4A96A', category: 'Madera', available: false },
+  { id: 'wengue', name: 'Wengué', hex: '#3B2314', category: 'Madera', available: false },
   // Colores
-  { id: 'azul-navy', name: 'Azul Navy', hex: '#1E3A5F', category: 'Colores' },
-  { id: 'verde-salvia', name: 'Verde Salvia', hex: '#7C9A7E', category: 'Colores' },
-  { id: 'terracota', name: 'Terracota', hex: '#C1603A', category: 'Colores' },
-  { id: 'bordo', name: 'Bordo', hex: '#7B1D1D', category: 'Colores' },
+  // { id: 'azul-navy', name: 'Azul Navy', hex: '#1E3A5F', category: 'Colores', available: false },
+  // { id: 'verde-salvia', name: 'Verde Salvia', hex: '#7C9A7E', category: 'Colores', available: false },
+  // { id: 'terracota', name: 'Terracota', hex: '#C1603A', category: 'Colores', available: false },
+  // { id: 'bordo', name: 'Bordo', hex: '#7B1D1D', category: 'Colores', available: false },
 ];

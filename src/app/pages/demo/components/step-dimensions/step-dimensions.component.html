@@ -14,7 +14,7 @@
           <span class="field-icon">{{ field.icon }}</span>
           {{ field.label }}
         </label>
-        <div class="field-input-wrapper">
+        <div class="field-input-wrapper" [class.invalid]="!isFieldValid(field)">
           <input
             [id]="'dim-' + field.key"
             type="number"
@@ -28,7 +28,11 @@
           />
           <span class="field-unit">mm</span>
         </div>
-        <p class="field-hint">{{ field.hint }} <br/><small>Rango: {{ field.min }} - {{ field.max }} mm</small></p>
+        <p class="field-hint" [class.error-text]="!isFieldValid(field)">
+          <span *ngIf="isFieldValid(field)">{{ field.hint }}</span>
+          <span *ngIf="!isFieldValid(field)">⚠️ Debe estar entre {{ field.min }} y {{ field.max }} mm</span>
+          <br/><small>Rango: {{ field.min }} - {{ field.max }} mm</small>
+        </p>
       </div>
 
       <!-- Resumen de volumen -->

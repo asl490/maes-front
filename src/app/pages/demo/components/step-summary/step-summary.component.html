@@ -29,7 +29,7 @@
         <div class="summary-item">
           <span class="summary-item-label">Color de melamina</span>
           <span class="summary-item-value color-value">
-            <span class="color-dot" [style.background]="selection.color?.hex"></span>
+            <span class="color-dot" [style.background]="selection.color?.imageUrl ? 'url(' + selection.color?.imageUrl + ') center/cover' : selection.color?.hex"></span>
             {{ selection.color?.name }}
           </span>
         </div>
@@ -58,11 +58,22 @@
       </div>
     </div>
 
+    <!-- Vista previa del modelo renderizado -->
+    <div class="summary-divider" *ngIf="modelPreviewUrls.length > 0"></div>
+    <div class="summary-section renders-section" *ngIf="modelPreviewUrls.length > 0">
+      <h3 class="summary-section-title">Vista del Mueble</h3>
+      <div class="renders-grid">
+        <div class="render-container" *ngFor="let url of modelPreviewUrls">
+          <img [src]="url" alt="Vista del mueble" class="render-image" />
+        </div>
+      </div>
+    </div>
+
     <!-- Color swatch grande -->
     <div class="summary-divider"></div>
     <div class="summary-section color-preview-section">
       <h3 class="summary-section-title">Vista previa del color</h3>
-      <div class="color-preview-large" [style.background]="selection.color?.hex">
+      <div class="color-preview-large" [style.background]="selection.color?.imageUrl ? 'url(' + selection.color?.imageUrl + ') center/cover' : selection.color?.hex">
         <div class="color-preview-info-overlay">
           <span class="color-preview-name-large">{{ selection.color?.name }}</span>
           <span class="color-preview-cat">Melamina · {{ selection.color?.category }}</span>
@@ -88,6 +99,14 @@
       </button>
 
       <div class="despiece-container" *ngIf="showDespiece">
+        <!-- Plano -->
+        <div class="plano-container mb-4">
+          <h4 class="table-title">Plano del Mueble</h4>
+          <div class="plano-image-wrapper">
+            <img src="/furniture/models/r_clasico_plano.webp" alt="Plano del Ropero Clásico" class="plano-image" />
+          </div>
+        </div>
+
         <!-- Tabla de Melamina -->
         <h4 class="table-title">Piezas de Melamina (18mm)</h4>
         <div class="table-responsive">
@@ -155,6 +174,29 @@
                 <td class="font-mono">{{ item.largo }}</td>
                 <td class="font-mono">{{ item.anchura }}</td>
                 <td>{{ item.cantidad }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Tabla de Materiales Extra -->
+        <h4 class="table-title mt-4">Lista de Accesorios y Quincallería</h4>
+        <div class="table-responsive">
+          <table class="despiece-table">
+            <thead>
+              <tr>
+                <th>ÍTEM</th>
+                <th>DESCRIPCIÓN DEL MATERIAL</th>
+                <th>CANTIDAD</th>
+                <th>UNIDAD</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of materialesExtra; let i = index">
+                <td>{{ i + 1 }}</td>
+                <td>{{ item.descripcion }}</td>
+                <td class="font-mono">{{ item.cantidad }}</td>
+                <td>{{ item.unidad }}</td>
               </tr>
             </tbody>
           </table>

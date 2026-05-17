@@ -13,6 +13,21 @@ export class StepSummaryComponent {
   @Input() selection!: DemoSelection;
   @Output() reset = new EventEmitter<void>();
 
+  get modelPreviewUrls(): string[] {
+    const { model, color } = this.selection;
+    if (model?.id === 'ropero-2p' && color && color.available !== false) {
+      return [
+        `/furniture/models/r_clasico_${color.id}_r.webp`,
+        `/furniture/models/r_clasico_${color.id}_s.webp`,
+      ];
+    }
+    if (model?.imageUrl) {
+      const base = model.imageUrl.startsWith('/') ? model.imageUrl : `/${model.imageUrl}`;
+      return [base];
+    }
+    return [];
+  }
+
   get whatsappUrl(): string {
     const { furnitureType, model, color, dimensions } = this.selection;
     const msg = encodeURIComponent(
@@ -34,6 +49,7 @@ export class StepSummaryComponent {
   showDespiece = false;
   despieceMelamina: any[] = [];
   despieceMdf: any[] = [];
+  materialesExtra: any[] = [];
 
   generarDespiece(): void {
     if (this.selection.model?.id !== 'ropero-2p') {
@@ -213,6 +229,17 @@ export class StepSummaryComponent {
         aux1: '',
         aux2: '',
       },
+    ];
+
+    this.materialesExtra = [
+      { descripcion: 'Bisagra lateral cangrejo', cantidad: 3, unidad: 'unid' },
+      { descripcion: 'Tornillos 4x50 mm (amarres y zócalo)', cantidad: 100, unidad: 'unid' },
+      { descripcion: 'Tornillos 3.17 mm (bisagras y correderas)', cantidad: 100, unidad: 'unid' },
+      { descripcion: 'Brazo piston', cantidad: 1, unidad: 'unid' },
+      { descripcion: 'Tapatornillo', cantidad: 1, unidad: 'plancha' },
+      { descripcion: 'Canopla pesada', cantidad: 2, unidad: 'unid' },
+      { descripcion: 'Tubos ovalados para colgar ropa', cantidad: 1, unidad: 'metro' },
+      { descripcion: 'Jaladores', cantidad: 2, unidad: 'unid' },
     ];
 
     this.showDespiece = true;

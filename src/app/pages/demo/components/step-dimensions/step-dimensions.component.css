@@ -84,6 +84,22 @@
   background: #F0FDF4;
 }
 
+.field-input-wrapper.invalid .field-input {
+  border-color: #EF4444 !important;
+  background: #FEF2F2 !important;
+}
+
+.field-input-wrapper.invalid .field-input:focus {
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2) !important;
+}
+
+.field-hint.error-text {
+  color: #EF4444;
+}
+.field-hint.error-text span {
+  font-weight: 600;
+}
+
 .field-input::-webkit-inner-spin-button,
 .field-input::-webkit-outer-spin-button {
   opacity: 0.5;

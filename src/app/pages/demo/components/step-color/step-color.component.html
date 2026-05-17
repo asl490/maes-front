@@ -1,38 +1,107 @@
 <div class="step-content">
   <div class="step-header">
     <h2 class="step-title">Elige el color de melamina</h2>
-    <p class="step-subtitle">Selecciona el acabado que mejor se adapte a tu espacio</p>
+    <p class="step-subtitle">
+      Selecciona el acabado que mejor se adapte a tu espacio
+    </p>
   </div>
 
-  <!-- Preview del color seleccionado -->
-  <div class="color-preview-bar" *ngIf="selectedColor">
-    <div class="color-preview-swatch" [style.background]="selectedColor.hex"></div>
-    <div class="color-preview-info">
-      <span class="color-preview-name">{{ selectedColor.name }}</span>
-      <span class="color-preview-category">{{ selectedColor.category }}</span>
+  <div class="step-layout">
+    <div class="step-preview-side">
+
+      <!-- Vista previa dinámica -->
+      @if (currentPreviewUrl) {
+      <div class="model-preview-container">
+        <img [src]="currentPreviewUrl" class="model-preview-image" [class.animating]="isAnimating"
+          alt="Vista previa del mueble" />
+      </div>
+      }
+
     </div>
-    <div class="color-preview-badge">Seleccionado ✓</div>
-  </div>
 
-  <!-- Categorías de colores -->
-  <div class="color-categories">
-    <div *ngFor="let category of categories" class="color-category">
-      <h3 class="category-title">{{ category }}</h3>
-      <div class="color-swatches">
-        <button
-          *ngFor="let color of getColorsByCategory(category)"
-          class="color-swatch"
-          [class.selected]="selectedColor?.id === color.id"
-          (click)="selectColor(color)"
-          [title]="color.name"
-          [attr.aria-label]="color.name"
-          [attr.aria-pressed]="selectedColor?.id === color.id"
-        >
-          <div class="swatch-circle" [style.background]="color.hex">
-            <span class="swatch-check" *ngIf="selectedColor?.id === color.id">✓</span>
+    <div class="step-controls-side">
+
+      <!-- Color seleccionado -->
+      @if (selectedColor) {
+      <div class="color-preview-bar">
+        <div class="color-preview-swatch" [style.background]="selectedColor.imageUrl
+              ? 'url(' + selectedColor.imageUrl + ') center/cover'
+              : selectedColor.hex">
+        </div>
+
+        <div class="color-preview-info">
+          <span class="color-preview-name">
+            {{ selectedColor.name }}
+          </span>
+
+          <span class="color-preview-category">
+            {{ selectedColor.category }}
+          </span>
+        </div>
+
+        <div class="color-preview-badge">
+          Seleccionado ✓
+        </div>
+      </div>
+      }
+
+      <!-- Categorías -->
+      <div class="color-categories">
+
+        @for (category of categories; track category) {
+        <div class="color-category">
+
+          <h3 class="category-title">
+            {{ category }}
+          </h3>
+
+          <div class="color-swatches">
+
+            @for (color of getColorsByCategory(category); track color.id) {
+
+            <button class="color-swatch" [class.selected]="selectedColor?.id === color.id"
+              [class.unavailable]="color.available === false" (click)="color.available !== false && selectColor(color)"
+              [title]="color.name" [attr.aria-label]="color.name" [attr.aria-pressed]="selectedColor?.id === color.id"
+              [disabled]="color.available === false">
+
+              <div class="swatch-circle" [style.background]="color.imageUrl
+                      ? 'url(' + color.imageUrl + ') center/cover'
+                      : color.hex">
+
+                @if (selectedColor?.id === color.id) {
+                <span class="swatch-check">✓</span>
+                }
+
+                @if (color.available === false) {
+                <span class="swatch-unavailable">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2">
+                    </rect>
+
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                  </svg>
+                </span>
+                }
+
+              </div>
+
+              <span class="swatch-name">
+                {{ color.name }}
+              </span>
+
+              @if (color.available === false) {
+              <span class="swatch-status">
+                Próximamente
+              </span>
+              }
+
+            </button>
+            }
+
           </div>
-          <span class="swatch-name">{{ color.name }}</span>
-        </button>
+        </div>
+        }
+
       </div>
     </div>
   </div>
@@ -40,16 +109,18 @@
   <div class="step-actions">
     <button class="btn-secondary" (click)="onBack()">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-        <line x1="19" y1="12" x2="5" y2="12"/>
-        <polyline points="12 19 5 12 12 5"/>
+        <line x1="19" y1="12" x2="5" y2="12" />
+        <polyline points="12 19 5 12 12 5" />
       </svg>
       Atrás
     </button>
+
     <button class="btn-primary" [disabled]="!selectedColor" (click)="onNext()">
       Continuar
+
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-        <line x1="5" y1="12" x2="19" y2="12"/>
-        <polyline points="12 5 19 12 12 19"/>
+        <line x1="5" y1="12" x2="19" y2="12" />
+        <polyline points="12 5 19 12 12 19" />
       </svg>
     </button>
   </div>
