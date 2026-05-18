@@ -19,6 +19,7 @@ export class StepSummaryComponent {
       return [
         `/furniture/models/r_clasico_${color.id}_r.webp`,
         `/furniture/models/r_clasico_${color.id}_s.webp`,
+        `/furniture/models/r_clasico_${color.id}_c.webp`,
       ];
     }
     if (model?.imageUrl) {

@@ -256,6 +256,16 @@
   gap: 0.875rem;
 }
 
+.actions-row {
+  display: flex;
+  gap: 0.875rem;
+  width: 100%;
+}
+
+.flex-1 {
+  flex: 1;
+}
+
 .btn-whatsapp {
   display: inline-flex;
   align-items: center;
