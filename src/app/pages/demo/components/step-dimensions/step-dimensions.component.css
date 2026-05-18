@@ -122,40 +122,6 @@
   margin: 0;
 }
 
-.volume-summary {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.875rem 1.25rem;
-  background: linear-gradient(135deg, #FEF2F2, #FFF5F5);
-  border: 1.5px solid #FCA5A5;
-  border-radius: 12px;
-  animation: slideDown 0.3s ease;
-}
-
-@keyframes slideDown {
-  from { opacity: 0; transform: translateY(-8px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-.volume-label {
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: #991B1B;
-}
-
-.volume-value {
-  font-size: 1.15rem;
-  font-weight: 800;
-  color: #DC2626;
-}
-
-.volume-unit {
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: #991B1B;
-}
-
 /* Diagram */
 .dimension-diagram {
   display: flex;
@@ -181,23 +147,11 @@
   position: relative;
 }
 
-.label {
-  position: absolute;
-  font-size: 0.68rem;
-  font-weight: 700;
-  color: #DC2626;
-  background: white;
-  padding: 0.1rem 0.3rem;
-  border-radius: 4px;
-}
-
-.label-height { left: 0; top: 40%; transform: translateY(-50%); }
-.label-width  { bottom: 4px; left: 50%; transform: translateX(-50%); }
-.label-depth  { right: 0; top: 10px; }
-
-.box-svg {
+.dimension-model-image {
   width: 100%;
   height: auto;
+  border-radius: 8px;
+  object-fit: contain;
 }
 
 .diagram-complete {
@@ -282,8 +236,16 @@
 }
 
 @media (max-width: 700px) {
-  .dimensions-layout { grid-template-columns: 1fr; }
-  .dimension-diagram { display: none; }
+  .dimensions-layout { 
+    grid-template-columns: 1fr; 
+  }
+  .dimension-diagram { 
+    grid-row: 1;
+    margin-bottom: 1rem;
+  }
+  .dimensions-form {
+    grid-row: 2;
+  }
   .step-content { padding: 1.5rem 1rem; }
   .step-title { font-size: 1.4rem; }
 }

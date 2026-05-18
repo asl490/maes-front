@@ -22,7 +22,27 @@ interface DimensionField {
 })
 export class StepDimensionsComponent {
   @Input() furnitureType: FurnitureType | null = null;
-  @Input() selectedModel: FurnitureModel | null = null;
+  private _selectedModel: FurnitureModel | null = null;
+  
+  @Input() set selectedModel(model: FurnitureModel | null) {
+    this._selectedModel = model;
+  }
+  get selectedModel(): FurnitureModel | null {
+    return this._selectedModel;
+  }
+
+  get modelImageUrl(): string {
+    if (this._selectedModel?.id === 'ropero-2p') {
+      return '/furniture/models/r_clasico_plano.webp';
+    }
+    if (this._selectedModel?.imageUrl) {
+      return this._selectedModel.imageUrl.startsWith('/') 
+        ? this._selectedModel.imageUrl 
+        : '/' + this._selectedModel.imageUrl;
+    }
+    return '/furniture/models/r_clasico.webp'; // Fallback final
+  }
+
   @Input() dimensions: DemoDimensions = { width: null, height: null, depth: null };
   @Output() dimensionsChanged = new EventEmitter<DemoDimensions>();
   @Output() next = new EventEmitter<void>();
@@ -78,12 +98,6 @@ export class StepDimensionsComponent {
       this.dimensions.depth >= this.dimensionFields[2].min &&
       this.dimensions.depth <= this.dimensionFields[2].max;
     return wOk && hOk && dOk;
-  }
-
-  getVolume(): string {
-    if (!this.isComplete()) return '0';
-    const v = this.dimensions.width! * this.dimensions.height! * this.dimensions.depth!;
-    return v.toLocaleString('es-PE');
   }
 
   onDimensionChange(): void {
