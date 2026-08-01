@@ -1,136 +1,53 @@
-<!-- Page Header -->
-<div class="flex items-center justify-between mb-8">
-  <div>
-    <h1 class="text-2xl font-bold text-primary">Users</h1>
-    <p class="text-sm mt-1 text-muted">Manage your team members and their permissions.</p>
-  </div>
-  <button class="btn-primary">
-    <lucide-icon name="user-plus" class="w-4 h-4"></lucide-icon>
-    Invite User
-  </button>
-</div>
+<section class="-m-4 min-h-full bg-[#f7f7f8] p-4 sm:-m-6 sm:p-6 lg:p-8">
+  <div class="mx-auto max-w-7xl space-y-6">
+    <header class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+      <div>
+        <span class="inline-flex items-center gap-2 rounded-full border border-red-200 bg-red-50 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-red-700"><span class="h-1.5 w-1.5 rounded-full bg-red-600"></span>Administración</span>
+        <h1 class="mt-3 text-3xl font-black tracking-tight text-slate-950">Usuarios</h1>
+        <p class="mt-1 text-sm text-slate-500">Gestiona las cuentas y roles registrados en Maes IA.</p>
+      </div>
+      <button class="btn-primary" type="button" (click)="createUser()" [disabled]="saving()"><lucide-icon name="user-plus" class="h-4 w-4"></lucide-icon>Nuevo usuario</button>
+    </header>
 
-  <!-- Stats -->
-  <div class="grid grid-cols-3 gap-5 mb-8">
-    <div class="card p-5 flex flex-col gap-3">
-      <p class="text-sm text-muted">Total Users</p>
-      <p class="text-2xl font-bold text-primary">{{ users().length }}</p>
-      <span class="badge badge-success">↑ +3 this week</span>
+    <div class="grid gap-4 sm:grid-cols-3">
+      <article class="card border-l-4 border-l-red-600 p-5"><p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Total registrados</p><p class="mt-2 text-3xl font-black text-slate-950">{{ total() }}</p></article>
+      <article class="card p-5"><p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Página actual</p><p class="mt-2 text-3xl font-black text-slate-950">{{ users().length }}</p></article>
+      <article class="card p-5"><p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Con persona vinculada</p><p class="mt-2 text-3xl font-black text-slate-950">{{ linkedPeopleCount() }}</p></article>
     </div>
-    <div class="card p-5 flex flex-col gap-3">
-      <p class="text-sm text-muted">Active</p>
-      <p class="text-2xl font-bold text-success">4</p>
-      <span class="badge badge-success">Active accounts</span>
-    </div>
-    <div class="card p-5 flex flex-col gap-3">
-      <p class="text-sm text-muted">Pending</p>
-      <p class="text-2xl font-bold text-warning">2</p>
-      <span class="badge badge-warning">Awaiting approval</span>
-    </div>
-  </div>
 
-  <!-- Filters -->
-  <div class="card p-4 mb-5 flex flex-col sm:flex-row items-start sm:items-center gap-3">
-    <div class="relative flex-1 w-full sm:max-w-xs">
-      <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-faint" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-      </svg>
-      <input type="text" placeholder="Search users..." class="input-icon"
-        [value]="search()" (input)="setSearch($any($event.target).value)" />
-    </div>
-    <div class="flex items-center gap-2">
-      @for (f of ['all', 'active', 'inactive', 'pending']; track f) {
-        <button (click)="setFilter(f)"
-          [class]="'btn-ghost text-xs px-3 py-1.5 capitalize ' + (filterStatus() === f ? 'badge-primary' : '')">
-          {{ f === 'all' ? 'All' : f.charAt(0).toUpperCase() + f.slice(1) }}
-        </button>
-      }
-    </div>
-    <p class="text-xs sm:ml-auto text-faint">{{ filteredUsers().length }} results</p>
-  </div>
+    <div class="card p-4"><div class="relative w-full sm:max-w-md">
+      <lucide-icon name="search" class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"></lucide-icon>
+      <input class="input-icon" type="search" placeholder="Buscar por nombre de usuario..." [value]="search()" (input)="setSearch($any($event.target).value)" />
+    </div></div>
 
-  <!-- Table -->
-  <div class="card overflow-hidden">
-    <div class="overflow-x-auto">
-      <table class="w-full">
-        <thead class="table-header">
-          <tr>
-            <th>User</th>
-            <th class="hidden md:table-cell">Role</th>
-            <th>Status</th>
-            <th class="hidden lg:table-cell">Joined</th>
-            <th class="text-right">Actions</th>
-          </tr>
-        </thead>
+    @if (error()) {
+      <div class="flex items-center justify-between gap-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800" role="alert"><span>{{ error() }}</span><button type="button" class="font-bold hover:underline" (click)="retry()">Reintentar</button></div>
+    }
+
+    <div class="card overflow-hidden">
+      <div class="overflow-x-auto"><table class="w-full">
+        <thead class="table-header"><tr><th>Usuario</th><th class="hidden md:table-cell">Cuenta</th><th>Roles</th><th class="hidden lg:table-cell">Último acceso</th><th class="text-right">Acciones</th></tr></thead>
         <tbody>
           @if (loading()) {
-            <tr>
-              <td colspan="5">
-                <app-loading message="Loading users..." />
-              </td>
-            </tr>
+            <tr><td colspan="5"><app-loading message="Cargando usuarios..." /></td></tr>
           } @else {
-            @for (user of pagedUsers(); track user.id) {
+            @for (user of users(); track user.id) {
               <tr class="table-row">
-                <td class="px-5 py-3.5">
-                  <div class="flex items-center gap-3">
-                    <div class="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0 bg-accent">
-                      {{ user.avatar }}
-                    </div>
-                    <div>
-                      <p class="text-sm font-medium text-primary">{{ user.name }}</p>
-                      <p class="text-xs text-faint">{{ user.email }}</p>
-                    </div>
-                  </div>
-                </td>
-                <td class="px-5 py-3.5 hidden md:table-cell">
-                  <span class="badge badge-info">{{ user.role }}</span>
-                </td>
-                <td class="px-5 py-3.5">
-                <span [class]="'badge ' + (user.status === 'active' ? 'badge-success' : user.status === 'pending' ? 'badge-warning' : 'badge-danger')">
-                  <span class="w-1.5 h-1.5 rounded-full mr-1 inline-block"
-                        [style.background]="user.status === 'active' ? '#4ade80' : user.status === 'pending' ? '#fbbf24' : '#f87171'">
-                  </span>
-                  {{ user.status.charAt(0).toUpperCase() + user.status.slice(1) }}
-                </span>
-                </td>
-                <td class="px-5 py-3.5 hidden lg:table-cell">
-                  <span class="text-sm text-muted">{{ user.joined }}</span>
-                </td>
-                <td class="px-5 py-3.5">
-                  <div class="flex items-center justify-end gap-1">
-                    <button class="btn-action-info" title="Edit" (click)="editUser(user)">
-                      <lucide-icon name="pencil" class="w-3.5 h-3.5"></lucide-icon>
-                    </button>
-                    <button class="btn-action-danger" title="Delete">
-                      <lucide-icon name="trash-2" class="w-3.5 h-3.5"></lucide-icon>
-                    </button>
-                  </div>
-                </td>
+                <td class="px-5 py-3.5"><div class="flex items-center gap-3"><span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-slate-950 text-xs font-bold text-white">{{ user.avatar }}</span><div><p class="text-sm font-semibold text-slate-900">{{ user.displayName }}</p><p class="text-xs text-slate-400">{{ user.email }}</p></div></div></td>
+                <td class="hidden px-5 py-3.5 md:table-cell"><p class="text-sm font-medium text-slate-700">{{ user.username }}</p><span [class]="user.hasPerson ? 'text-emerald-600' : 'text-amber-600'" class="text-xs">{{ user.hasPerson ? 'Persona vinculada' : 'Sin persona vinculada' }}</span></td>
+                <td class="px-5 py-3.5"><div class="flex flex-wrap gap-1">@for (role of user.roles; track role) {<span class="rounded-full border border-red-100 bg-red-50 px-2 py-1 text-[11px] font-semibold text-red-700">{{ role }}</span>} @empty {<span class="text-xs text-slate-400">Sin rol</span>}</div></td>
+                <td class="hidden px-5 py-3.5 text-sm text-slate-500 lg:table-cell">{{ user.lastLogin }}</td>
+                <td class="px-5 py-3.5"><div class="flex justify-end gap-1"><button class="btn-action-info" type="button" title="Editar usuario" (click)="editUser(user)" [disabled]="saving()"><lucide-icon name="pencil" class="h-3.5 w-3.5"></lucide-icon></button><button class="btn-action-danger" type="button" title="Eliminar usuario" (click)="deleteUser(user)" [disabled]="saving()"><lucide-icon name="trash-2" class="h-3.5 w-3.5"></lucide-icon></button></div></td>
               </tr>
-            }
-            @empty {
-              <tr>
-                <td colspan="5" class="px-5 py-12 text-center">
-                  <div class="flex flex-col items-center gap-2">
-                    <svg class="w-10 h-10 text-faint" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                    <p class="text-sm text-faint">No users found</p>
-                  </div>
-                </td>
-              </tr>
+            } @empty {
+              <tr><td colspan="5" class="px-5 py-14 text-center"><lucide-icon name="users" class="mx-auto h-10 w-10 text-slate-300"></lucide-icon><p class="mt-3 text-sm font-semibold text-slate-600">No se encontraron usuarios</p><p class="mt-1 text-xs text-slate-400">Prueba con otro término de búsqueda.</p></td></tr>
             }
           }
         </tbody>
-      </table>
+      </table></div>
+      <app-paginator [page]="page()" [pageSize]="pageSize()" [total]="total()" [pageSizes]="[5, 10, 25]" (pageChange)="changePage($event)" (pageSizeChange)="changePageSize($event)" />
     </div>
-    <app-paginator
-      [page]="page()"
-      [pageSize]="pageSize()"
-      [total]="filteredUsers().length"
-      [pageSizes]="[5, 10, 25]"
-      (pageChange)="page.set($event)"
-      (pageSizeChange)="pageSize.set($event)"
-    />
   </div>
+</section>
+
+

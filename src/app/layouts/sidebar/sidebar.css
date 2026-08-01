@@ -1,0 +1,43 @@
+.maes-sidebar {
+  --bg-surface: #18191e;
+  --bg-elevated: #202229;
+  --bg-overlay: #292b33;
+  --border: #34363f;
+  --border-subtle: #292b33;
+  --text-primary: #f8fafc;
+  --text-secondary: #d1d5db;
+  --text-muted: #9ca3af;
+  --text-faint: #737782;
+  --accent: #dc0a2f;
+  --accent-dark: #b90928;
+  --accent-text: #ff8a9d;
+  isolation: isolate;
+  overflow: hidden;
+  background: linear-gradient(135deg, #18191e 0%, #131419 55%, #1c0e13 100%);
+}
+
+.maes-sidebar::before {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  content: '';
+  opacity: 0.045;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.16) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.16) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+.maes-sidebar::after {
+  position: absolute;
+  right: -9rem;
+  bottom: -7rem;
+  z-index: -1;
+  width: 22rem;
+  height: 22rem;
+  border-radius: 999px;
+  content: '';
+  background: rgba(185, 9, 40, 0.18);
+  filter: blur(90px);
+  pointer-events: none;
+}

@@ -36,6 +36,7 @@ export interface NavGroup {
   selector: 'app-sidebar',
   imports: [RouterLink, RouterLinkActive, NgTemplateOutlet],
   templateUrl: './sidebar.html',
+  styleUrl: './sidebar.css',
 })
 export class Sidebar {
   isMobile = input(false);
@@ -47,56 +48,35 @@ export class Sidebar {
 
   navGroups: NavGroup[] = [
     {
-      title: 'Main',
+      title: 'Principal',
       items: [
-        { label: 'Dashboard', route: '/app/dashboard', icon: 'dashboard' },
-        {
-          label: 'Analytics',
-          route: '/app/analytics',
-          icon: 'analytics',
-          badge: 'New',
-          badgeType: 'violet',
-        },
-        { label: 'Charts', route: '/app/charts', icon: 'charts' },
-        { label: 'Calendar', route: '/app/calendar', icon: 'calendar' },
+        { label: 'Inicio', route: '/app/dashboard', icon: 'dashboard' },
+        { label: 'Nuevo diseño', route: '/demo', icon: 'charts', badge: 'Demo', badgeType: 'violet' },
       ],
     },
     {
-      title: 'Management',
+      title: 'Gestión',
       items: [
-        {
-          label: 'Users',
-          icon: 'users',
-          badge: '24',
-          badgeType: 'info',
-          children: [
-            { label: 'All Users', route: '/app/users' },
-            {
-              label: 'Roles & Permissions',
-              children: [
-                { label: 'Admin', route: '/app/users/roles/admin' },
-                { label: 'Editor', route: '/app/users/roles/editor' },
-                {
-                  label: 'Viewer',
-                  route: '/app/users/roles/viewer',
-                  badge: 'New',
-                  badgeType: 'violet',
-                },
-              ],
-            },
-            { label: 'Invitations', route: '/app/users/invitations', badge: '3', badgeType: 'warning' },
-          ],
-        },
-        {
-          label: 'Settings',
-          icon: 'settings',
-          children: [
-            { label: 'General', route: '/app/settings' },
-            { label: 'Security', route: '/app/settings/security' },
-            { label: 'Notifications', route: '/app/settings/notifications' },
-            { label: 'Appearance', route: '/app/settings/appearance' },
-          ],
-        },
+        { label: 'Usuarios', route: '/app/users', icon: 'users' },
+        { label: 'Personas', route: '/app/people', icon: 'people' },
+        { label: 'Calendario', route: '/app/calendar', icon: 'calendar' },
+      ],
+    },
+    {
+      title: 'Catálogo',
+      items: [
+        { label: 'Categorías', route: '/app/categories', icon: 'categories' },
+        { label: 'Subcategorías', route: '/app/subcategories', icon: 'subcategories' },
+        { label: 'Muebles', route: '/app/furniture', icon: 'furniture' },
+        { label: 'Parámetros', route: '/app/parameters', icon: 'parameters' },
+      ],
+    },
+    {
+      title: 'Información',
+      items: [
+        { label: 'Analítica', route: '/app/analytics', icon: 'analytics' },
+        { label: 'Gráficos', route: '/app/charts', icon: 'charts' },
+        { label: 'Configuración', route: '/app/settings', icon: 'settings' },
       ],
     },
   ];

@@ -8,6 +8,7 @@ import { Footer } from '../footer/footer';
   selector: 'app-main-layout',
   imports: [RouterOutlet, Header, Sidebar, Footer],
   templateUrl: './main-layout.html',
+  styleUrl: './main-layout.css',
 })
 export class MainLayout {
   mobileOpen = signal(false);

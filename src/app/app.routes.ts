@@ -40,6 +40,26 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/users/users').then((m) => m.Users),
       },
       {
+        path: 'people',
+        loadComponent: () => import('./pages/people/people').then((m) => m.People),
+      },
+      {
+        path: 'categories',
+        loadComponent: () => import('./pages/categories/categories').then((m) => m.Categories),
+      },
+      {
+        path: 'subcategories',
+        loadComponent: () => import('./pages/subcategories/subcategories').then((m) => m.Subcategories),
+      },
+      {
+        path: 'furniture',
+        loadComponent: () => import('./pages/furniture/furniture').then((m) => m.Furniture),
+      },
+      {
+        path: 'parameters',
+        loadComponent: () => import('./pages/parameters/parameters').then((m) => m.Parameters),
+      },
+      {
         path: 'settings',
         loadComponent: () => import('./pages/settings/settings').then((m) => m.Settings),
       },

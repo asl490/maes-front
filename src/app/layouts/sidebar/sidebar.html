@@ -1,18 +1,18 @@
 <aside
   [class]="collapsed() ? 'w-[72px]' : 'w-64'"
-  class="relative flex flex-col h-screen transition-all duration-300 ease-in-out shrink-0 z-40 bg-surface"
+  class="maes-sidebar relative flex flex-col h-screen transition-all duration-300 ease-in-out shrink-0 z-40 bg-surface"
   style="border-right:1px solid var(--border);">
 
   <!-- Logo + Close (móvil) -->
   <div class="flex items-center h-16 px-4 shrink-0 sep-b">
     <div class="flex items-center gap-3 overflow-hidden flex-1">
-      <div class="w-8 h-8 rounded-xl flex items-center justify-center shrink-0 bg-accent">
-        <span class="text-white font-bold text-xs tracking-tight">DQ</span>
+      <div class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 bg-accent shadow-lg shadow-red-950/30">
+        <span class="text-white font-black text-sm tracking-tight">M</span>
       </div>
       @if (!collapsed()) {
         <div class="overflow-hidden">
-          <span class="font-bold text-base tracking-tight whitespace-nowrap text-primary">DQ Admin</span>
-          <span class="block text-[10px] font-medium tracking-widest uppercase whitespace-nowrap text-accent">Pro Suite</span>
+          <span class="font-extrabold text-base tracking-tight whitespace-nowrap text-primary">MAES IA</span>
+          <span class="block text-[10px] font-medium tracking-[0.18em] uppercase whitespace-nowrap text-accent-text">Fabricación inteligente</span>
         </div>
       }
     </div>
@@ -205,6 +205,25 @@
       <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
         <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
       </svg>
+    }
+    @case ('people') {
+      <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19a6 6 0 00-12 0m6-9a3 3 0 100-6 3 3 0 000 6zm10 9v-1a5 5 0 00-4-4.58M16 4.13a3 3 0 010 5.74" />
+      </svg>
+    }
+    @case ('categories') {
+      <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M20 13l-7 7-9-9V4h7l9 9zM8.5 8.5h.01" />
+      </svg>
+    }
+    @case ('subcategories') {
+      <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M7 12h13M10 18h10" /></svg>
+    }
+    @case ('furniture') {
+      <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M5 11V7a3 3 0 016 0v4m2 0V7a3 3 0 016 0v4M3 11h18v7H3v-7zm2 7v2m14-2v2"/></svg>
+    }
+    @case ('parameters') {
+      <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h10m4 0h2M4 12h2m4 0h10M4 18h7m4 0h5M14 4v4M6 10v4m5 2v4"/></svg>
     }
     @case ('settings') {
       <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">

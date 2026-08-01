@@ -1,0 +1,14 @@
+.maes-header {
+  --bg-surface: #ffffff;
+  --bg-elevated: #f7f7f8;
+  --bg-overlay: #eef0f3;
+  --border: #e2e5e9;
+  --border-subtle: #eef0f3;
+  --text-primary: #18191e;
+  --text-secondary: #434650;
+  --text-muted: #686c76;
+  --text-faint: #9297a2;
+  --accent: #dc0a2f;
+  --accent-dark: #b90928;
+  --accent-text: #b90928;
+}

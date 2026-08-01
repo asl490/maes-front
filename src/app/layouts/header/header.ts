@@ -6,6 +6,7 @@ import { ThemeService, ThemeMode } from '../../services/theme.service';
   selector: 'app-header',
   imports: [],
   templateUrl: './header.html',
+  styleUrl: './header.css',
 })
 export class Header {
   isMobile = input(false);
@@ -16,16 +17,16 @@ export class Header {
   menuToggle = output<void>();
 
   notifications = [
-    { icon: 'user',  color: 'violet',  title: 'New user registered',  desc: 'Sarah Connor joined the platform', time: '2m ago',  unread: true  },
-    { icon: 'chart', color: 'emerald', title: 'Revenue milestone',    desc: 'Monthly goal reached at 94%',      time: '1h ago',  unread: true  },
-    { icon: 'alert', color: 'amber',   title: 'System alert',         desc: 'Server load above 80% threshold',  time: '3h ago',  unread: false },
-    { icon: 'check', color: 'sky',     title: 'Deployment complete',  desc: 'v2.4.1 deployed successfully',     time: '5h ago',  unread: false },
+    { icon: 'check', color: 'emerald', title: 'Despiece completado', desc: 'El proyecto MAES-0241 está listo', time: 'Hace 8 min', unread: true },
+    { icon: 'chart', color: 'violet', title: 'Cotización generada', desc: 'Ropero premium · MAES-0240', time: 'Hace 42 min', unread: true },
+    { icon: 'user', color: 'sky', title: 'Nuevo cliente', desc: 'Andrea Salas fue registrada', time: 'Hace 2 h', unread: false },
+    { icon: 'alert', color: 'amber', title: 'Diseño pendiente', desc: 'Faltan dimensiones en MAES-0238', time: 'Hace 3 h', unread: false },
   ];
 
   themes: { mode: ThemeMode; label: string; icon: string }[] = [
-    { mode: 'light',  label: 'Light',  icon: 'sun'    },
-    { mode: 'dark',   label: 'Dark',   icon: 'moon'   },
-    { mode: 'system', label: 'System', icon: 'system' },
+    { mode: 'light',  label: 'Claro',  icon: 'sun'    },
+    { mode: 'dark',   label: 'Oscuro', icon: 'moon'   },
+    { mode: 'system', label: 'Sistema', icon: 'system' },
   ];
 
   get unreadCount() { return this.notifications.filter((n) => n.unread).length; }

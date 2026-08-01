@@ -2,6 +2,7 @@ import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/
 import { provideRouter } from '@angular/router';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideEchartsCore } from 'ngx-echarts';
 import { LUCIDE_ICONS, LucideIconProvider } from 'lucide-angular';
 import {
@@ -9,14 +10,19 @@ import {
   Moon, Sun, Monitor, ChevronLeft, ChevronRight, ChevronDown,
   X, Menu, LogOut, User, CreditCard, Eye, EyeOff, Pencil, Trash2,
   Plus, Download, Check, AlertTriangle, Shield, Lock, Palette,
-  Mail, KeyRound, ArrowRight, RefreshCw, UserPlus,
+  Mail, KeyRound, ArrowRight, RefreshCw, UserPlus, Contact, ContactRound, Tags, Armchair,
 } from 'lucide-angular';
 import { routes } from './app.routes';
+import { provideApi } from './core/api/generated/provide-api';
+import { environment } from '../environments/environment';
+import { authInterceptor } from './core/auth/auth.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
+    provideHttpClient(withInterceptors([authInterceptor])),
+    provideApi(environment.apiBaseUrl),
     provideClientHydration(withEventReplay()),
     provideAnimationsAsync(),
     provideEchartsCore({ echarts: () => import('echarts') }),
@@ -28,7 +34,7 @@ export const appConfig: ApplicationConfig = {
         Moon, Sun, Monitor, ChevronLeft, ChevronRight, ChevronDown,
         X, Menu, LogOut, User, CreditCard, Eye, EyeOff, Pencil, Trash2,
         Plus, Download, Check, AlertTriangle, Shield, Lock, Palette,
-        Mail, KeyRound, ArrowRight, RefreshCw, UserPlus,
+        Mail, KeyRound, ArrowRight, RefreshCw, UserPlus, Contact, ContactRound, Tags, Armchair,
       }),
     },
   ],

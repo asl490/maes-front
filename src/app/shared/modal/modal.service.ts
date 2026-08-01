@@ -11,7 +11,7 @@ export interface ModalConfig {
 export class ModalService {
   private dialog = inject(Dialog);
 
-  open<T>(component: Type<T>, config: ModalConfig = {}): DialogRef<unknown, T> {
+  open<C, R = unknown>(component: Type<C>, config: ModalConfig = {}): DialogRef<R, C> {
     const widths = { sm: '400px', md: '520px', lg: '680px', xl: '860px' };
 
     return this.dialog.open(component, {

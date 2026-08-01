@@ -1,79 +1,160 @@
-import { Component, signal, computed, inject, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule } from 'lucide-angular';
-import { ModalService } from '../../shared/modal/modal.service';
-import { UserEditModal } from './user-edit.modal';
-import { Paginator } from '../../shared/paginator/paginator';
+import { finalize } from 'rxjs';
+import { UserDTO } from '../../core/api/generated/model/userDTO';
 import { Loading } from '../../shared/loading/loading';
+import { ModalService } from '../../shared/modal/modal.service';
+import { Paginator } from '../../shared/paginator/paginator';
+import { UserEditModal, UserFormValue } from './user-edit.modal';
+import { UserManagementService } from './user-management.service';
 
-interface User {
+interface UserViewModel {
   id: number;
-  name: string;
+  username: string;
+  displayName: string;
   email: string;
-  role: string;
-  status: 'active' | 'inactive' | 'pending';
-  joined: string;
+  roles: string[];
+  lastLogin: string;
   avatar: string;
+  hasPerson: boolean;
 }
 
 @Component({
   selector: 'app-users',
   imports: [FormsModule, LucideAngularModule, Paginator, Loading],
   templateUrl: './users.html',
+  styleUrl: '../../shared/admin-feature.css',
 })
-export class Users implements OnInit {
-  loading = signal(true);
+export class Users implements OnInit, OnDestroy {
+  private readonly modal = inject(ModalService);
+  private readonly userManagement = inject(UserManagementService);
+  private searchTimer?: ReturnType<typeof setTimeout>;
 
-  page     = signal(1);
-  pageSize = signal(5);
-  search = signal('');
-  filterStatus = signal('all');
+  readonly loading = signal(true);
+  readonly saving = signal(false);
+  readonly error = signal('');
+  readonly page = signal(1);
+  readonly pageSize = signal(10);
+  readonly total = signal(0);
+  readonly search = signal('');
+  readonly users = signal<UserViewModel[]>([]);
+  readonly linkedPeopleCount = computed(() => this.users().filter((user) => user.hasPerson).length);
 
-  users = signal<User[]>([]);
-
-  filteredUsers = computed(() => {
-    const q = this.search().toLowerCase();
-    const s = this.filterStatus();
-    return this.users().filter(
-      (u) =>
-        (s === 'all' || u.status === s) &&
-        (u.name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q))
-    );
-  });
-
-  pagedUsers = computed(() => {
-    const start = (this.page() - 1) * this.pageSize();
-    return this.filteredUsers().slice(start, start + this.pageSize());
-  });
-
-  private modal = inject(ModalService);
-
-  async ngOnInit() {
-    // Simula llamada a API
-    await new Promise(r => setTimeout(r, 1500));
-
-    this.users.set([
-      { id: 1, name: 'Alice Johnson', email: 'alice@example.com', role: 'Admin',  status: 'active',   joined: 'Jan 10, 2025', avatar: 'AJ' },
-      { id: 2, name: 'Bob Martinez',  email: 'bob@example.com',   role: 'Editor', status: 'active',   joined: 'Jan 12, 2025', avatar: 'BM' },
-      { id: 3, name: 'Carol White',   email: 'carol@example.com', role: 'Viewer', status: 'inactive', joined: 'Jan 15, 2025', avatar: 'CW' },
-      { id: 4, name: 'David Lee',     email: 'david@example.com', role: 'Editor', status: 'pending',  joined: 'Jan 18, 2025', avatar: 'DL' },
-      { id: 5, name: 'Eva Brown',     email: 'eva@example.com',   role: 'Admin',  status: 'active',   joined: 'Jan 20, 2025', avatar: 'EB' },
-      { id: 6, name: 'Frank Wilson',  email: 'frank@example.com', role: 'Viewer', status: 'active',   joined: 'Jan 22, 2025', avatar: 'FW' },
-      { id: 7, name: 'Grace Kim',     email: 'grace@example.com', role: 'Editor', status: 'inactive', joined: 'Jan 24, 2025', avatar: 'GK' },
-      { id: 8, name: 'Henry Ford',    email: 'henry@example.com', role: 'Viewer', status: 'pending',  joined: 'Jan 26, 2025', avatar: 'HF' },
-    ]);
-
-    this.loading.set(false);
+  ngOnInit(): void {
+    this.loadUsers();
   }
 
-  setSearch(val: string) { this.search.set(val); this.page.set(1); }
-  setFilter(val: string) { this.filterStatus.set(val); this.page.set(1); }
+  ngOnDestroy(): void {
+    clearTimeout(this.searchTimer);
+  }
 
-  editUser(user: User) {
-    const dialogRef = this.modal.open(UserEditModal, {
-      title: 'Edit User',
-      size: 'md',
-      data: { name: user.name, email: user.email, role: user.role },
+  setSearch(value: string): void {
+    this.search.set(value);
+    this.page.set(1);
+    clearTimeout(this.searchTimer);
+    this.searchTimer = setTimeout(() => this.loadUsers(), 350);
+  }
+
+  changePage(page: number): void {
+    this.page.set(page);
+    this.loadUsers();
+  }
+
+  changePageSize(size: number): void {
+    this.pageSize.set(size);
+    this.page.set(1);
+    this.loadUsers();
+  }
+
+  retry(): void {
+    this.loadUsers();
+  }
+
+  createUser(): void {
+    const ref = this.modal.open<UserEditModal, UserFormValue>(UserEditModal, { title: 'Crear usuario', size: 'md', data: { mode: 'create' } });
+    ref.closed.subscribe((value) => { if (value) this.saveNewUser(value); });
+  }
+
+  editUser(user: UserViewModel): void {
+    const ref = this.modal.open<UserEditModal, UserFormValue>(UserEditModal, {
+      title: 'Editar usuario', size: 'md', data: { mode: 'edit', username: user.username, roles: user.roles },
     });
+    ref.closed.subscribe((value) => { if (value) this.saveUser(user.id, value); });
+  }
+
+  deleteUser(user: UserViewModel): void {
+    if (!confirm(`¿Eliminar el usuario “${user.username}”?`)) return;
+    this.saving.set(true);
+    this.userManagement.delete(user.id).pipe(finalize(() => this.saving.set(false))).subscribe({
+      next: () => this.loadUsers(),
+      error: (error) => this.error.set(this.errorMessage(error)),
+    });
+  }
+
+  private loadUsers(): void {
+    this.loading.set(true);
+    this.error.set('');
+    this.userManagement.list(this.search(), this.page() - 1, this.pageSize()).pipe(
+      finalize(() => this.loading.set(false)),
+    ).subscribe({
+      next: (response) => {
+        this.users.set((response.content ?? []).map((user) => this.toViewModel(user)));
+        this.total.set(response.totalElements ?? 0);
+      },
+      error: (error) => this.error.set(this.errorMessage(error)),
+    });
+  }
+
+  private saveNewUser(value: UserFormValue): void {
+    this.saving.set(true);
+    this.error.set('');
+    this.userManagement.create(value).pipe(finalize(() => this.saving.set(false))).subscribe({
+      next: () => { this.page.set(1); this.loadUsers(); },
+      error: (error) => this.error.set(this.errorMessage(error)),
+    });
+  }
+
+  private saveUser(id: number, value: UserFormValue): void {
+    this.saving.set(true);
+    this.error.set('');
+    this.userManagement.update(id, value).pipe(finalize(() => this.saving.set(false))).subscribe({
+      next: () => this.loadUsers(),
+      error: (error) => this.error.set(this.errorMessage(error)),
+    });
+  }
+
+  private toViewModel(user: UserDTO): UserViewModel {
+    const name = [user.person?.name, user.person?.lastName].filter(Boolean).join(' ') || user.username || 'Usuario';
+    return {
+      id: user.id ?? 0,
+      username: user.username ?? 'Sin usuario',
+      displayName: name,
+      email: user.person?.email ?? 'Sin correo asociado',
+      roles: user.roles ?? [],
+      lastLogin: this.formatDate(user.lastlogin),
+      avatar: this.initials(name),
+      hasPerson: Boolean(user.person),
+    };
+  }
+
+  private formatDate(value?: string): string {
+    if (!value) return 'Nunca';
+    const date = new Date(value);
+    return Number.isNaN(date.getTime()) ? value : new Intl.DateTimeFormat('es-PE', { dateStyle: 'medium', timeStyle: 'short' }).format(date);
+  }
+
+  private initials(name: string): string {
+    return name.split(/\s+/).filter(Boolean).slice(0, 2).map((part) => part[0]?.toUpperCase()).join('') || 'U';
+  }
+
+  private errorMessage(error: unknown): string {
+    if (!(error instanceof HttpErrorResponse)) return 'No se pudo completar la operación.';
+    if (error.status === 0) return 'No se pudo conectar con el servidor.';
+    if (error.status === 401) return 'La sesión expiró. Vuelve a iniciar sesión.';
+    if (error.status === 403) return 'No tienes permisos para administrar usuarios.';
+    const message = error.error && typeof error.error === 'object' && 'message' in error.error ? error.error.message : null;
+    return typeof message === 'string' ? message : 'No se pudo completar la operación.';
   }
 }

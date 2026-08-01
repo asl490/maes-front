@@ -1,0 +1,4 @@
+.app-content > :not(router-outlet) {
+  flex: 1 0 auto;
+  min-height: 100%;
+}

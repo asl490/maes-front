@@ -1,64 +1,83 @@
-import { Component, signal, inject } from '@angular/core';
-import { Router } from '@angular/router';
-import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
+import { HttpErrorResponse } from '@angular/common/http';
+import { Component, inject, signal } from '@angular/core';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router, RouterLink } from '@angular/router';
+import { firstValueFrom } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
-import { Splash } from '../../shared/splash/splash';
 
 @Component({
   selector: 'app-login',
-  imports: [ReactiveFormsModule, Splash],
+  imports: [ReactiveFormsModule, RouterLink],
   templateUrl: './login.html',
 })
 export class Login {
   showPassword = signal(false);
-  showSplash   = signal(false);
-  serverError  = signal('');
+  showSplash = signal(false);
+  serverError = signal('');
 
   form = inject(FormBuilder).group({
-    email:      ['', [Validators.required, Validators.email]],
-    password:   ['', [Validators.required, Validators.minLength(6)]],
+    username: ['', [Validators.required]],
+    password: ['', [Validators.required, Validators.minLength(3)]],
     rememberMe: [false],
   });
 
-  constructor(private auth: AuthService, private router: Router) {}
+  constructor(
+    private auth: AuthService,
+    private router: Router,
+  ) {}
 
-  get email()    { return this.form.get('email')!; }
-  get password() { return this.form.get('password')!; }
+  get username() {
+    return this.form.get('username')!;
+  }
+  get password() {
+    return this.form.get('password')!;
+  }
 
-  fieldError(field: 'email' | 'password'): string {
-    const ctrl = this.form.get(field)!;
-    if (!ctrl.touched || ctrl.valid) return '';
-    if (ctrl.hasError('required'))  return 'This field is required.';
-    if (ctrl.hasError('email'))     return 'Enter a valid email address.';
-    if (ctrl.hasError('minlength')) return 'Password must be at least 6 characters.';
+  fieldError(field: 'username' | 'password'): string {
+    const control = this.form.get(field)!;
+    if (!control.touched || control.valid) return '';
+    if (control.hasError('required')) return 'This field is required.';
+    if (control.hasError('minlength')) return 'Password must be at least 6 characters.';
     return '';
   }
 
-  togglePassword() { this.showPassword.update((v) => !v); }
-
-  fillDemo() {
-    this.form.setValue({ email: 'admin@nexadmin.com', password: 'admin123', rememberMe: false });
-    this.serverError.set('');
+  togglePassword(): void {
+    this.showPassword.update((visible) => !visible);
   }
 
-  async submit() {
+  async submit(): Promise<void> {
     this.form.markAllAsTouched();
     if (this.form.invalid) return;
 
-    // Mostrar splash inmediatamente
     this.serverError.set('');
     this.showSplash.set(true);
 
-    await new Promise((r) => setTimeout(r, 1800));
-
-    const ok = this.auth.login(this.form.value.email!, this.form.value.password!);
-
-    if (ok) {
-      this.router.navigate(['/app/dashboard']);
-    } else {
-      // Fallo — ocultar splash y mostrar error
+    try {
+      await firstValueFrom(
+        this.auth.login(
+          this.form.value.username!,
+          this.form.value.password!,
+          Boolean(this.form.value.rememberMe),
+        ),
+      );
+      await this.router.navigate(['/app/dashboard']);
+    } catch (error: unknown) {
       this.showSplash.set(false);
-      this.serverError.set('Invalid email or password. Try admin@nexadmin.com / admin123');
+      this.serverError.set(this.authErrorMessage(error));
     }
+  }
+
+  private authErrorMessage(error: unknown): string {
+    if (!(error instanceof HttpErrorResponse)) {
+      return error instanceof Error ? error.message : 'Unable to sign in. Please try again.';
+    }
+    if (error.status === 0) return 'The authentication server is unavailable.';
+    if (error.status === 400 || error.status === 401) return 'Invalid username or password.';
+
+    const message =
+      error.error && typeof error.error === 'object' && 'message' in error.error
+        ? error.error.message
+        : null;
+    return typeof message === 'string' ? message : 'Unable to sign in. Please try again.';
   }
 }

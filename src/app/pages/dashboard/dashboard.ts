@@ -1,35 +1,40 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [],
+  imports: [RouterLink],
   templateUrl: './dashboard.html',
 })
 export class Dashboard {
-  stats = [
-    { label: 'Total Revenue',   value: '$84,254', change: '+12.5%', up: true,  icon: 'revenue'    },
-    { label: 'Active Users',    value: '24,521',  change: '+8.2%',  up: true,  icon: 'users'      },
-    { label: 'New Orders',      value: '1,893',   change: '-3.1%',  up: false, icon: 'orders'     },
-    { label: 'Conversion Rate', value: '3.24%',   change: '+1.8%',  up: true,  icon: 'conversion' },
+  private readonly auth = inject(AuthService);
+
+  readonly stats = [
+    { label: 'Diseños activos', value: '24', change: '+6 este mes', icon: 'designs' },
+    { label: 'Cotizaciones', value: '18', change: '5 por confirmar', icon: 'quotes' },
+    { label: 'Órdenes en proceso', value: '7', change: '3 listas para corte', icon: 'orders' },
+    { label: 'Ahorro estimado', value: '12.4%', change: 'En uso de tableros', icon: 'saving' },
   ];
 
-  transactions = [
-    { id: '#TXN-001', customer: 'Alice Johnson', email: 'alice@example.com', amount: '$1,240.00', status: 'success', date: 'Jan 28, 2025' },
-    { id: '#TXN-002', customer: 'Bob Martinez',  email: 'bob@example.com',   amount: '$890.50',   status: 'pending', date: 'Jan 28, 2025' },
-    { id: '#TXN-003', customer: 'Carol White',   email: 'carol@example.com', amount: '$3,100.00', status: 'success', date: 'Jan 27, 2025' },
-    { id: '#TXN-004', customer: 'David Lee',     email: 'david@example.com', amount: '$450.00',   status: 'failed',  date: 'Jan 27, 2025' },
-    { id: '#TXN-005', customer: 'Eva Brown',     email: 'eva@example.com',   amount: '$2,780.00', status: 'success', date: 'Jan 26, 2025' },
-    { id: '#TXN-006', customer: 'Frank Wilson',  email: 'frank@example.com', amount: '$620.00',   status: 'pending', date: 'Jan 26, 2025' },
+  readonly projects = [
+    { id: 'MAES-0241', name: 'Ropero clásico', customer: 'Carla Mendoza', dimensions: '180 × 210 × 55 cm', status: 'Calculado', date: 'Hoy, 10:42' },
+    { id: 'MAES-0240', name: 'Ropero premium', customer: 'Luis Ramírez', dimensions: '240 × 220 × 60 cm', status: 'En revisión', date: 'Hoy, 09:18' },
+    { id: 'MAES-0239', name: 'Ropero corredizo', customer: 'Andrea Salas', dimensions: '200 × 215 × 58 cm', status: 'Cotizado', date: 'Ayer, 17:36' },
+    { id: 'MAES-0238', name: 'Ropero estándar', customer: 'Miguel Torres', dimensions: '160 × 200 × 52 cm', status: 'Borrador', date: 'Ayer, 15:04' },
   ];
 
-  activity = [
-    { user: 'Sarah Connor', action: 'created a new project',     time: '2 min ago',  avatar: 'SC' },
-    { user: 'Mike Ross',    action: 'updated billing info',       time: '15 min ago', avatar: 'MR' },
-    { user: 'Anna Bell',    action: 'submitted a support ticket', time: '1h ago',     avatar: 'AB' },
-    { user: 'Tom Hardy',    action: 'upgraded to Pro plan',       time: '3h ago',     avatar: 'TH' },
-    { user: 'Lisa Park',    action: 'exported analytics report',  time: '5h ago',     avatar: 'LP' },
+  readonly activity = [
+    { title: 'Despiece calculado', detail: 'Ropero clásico · MAES-0241', time: 'Hace 8 min', icon: 'cut' },
+    { title: 'Cotización compartida', detail: 'Enviada a Andrea Salas', time: 'Hace 42 min', icon: 'sent' },
+    { title: 'Nuevo diseño guardado', detail: 'Ropero premium · MAES-0240', time: 'Hace 1 h', icon: 'design' },
+    { title: 'Orden lista para corte', detail: 'Proyecto MAES-0237', time: 'Hace 3 h', icon: 'ready' },
   ];
 
-  barHeights = [40, 65, 50, 80, 60, 90, 70, 85, 55, 75, 95, 68];
-  months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  readonly barHeights = [38, 52, 46, 68, 58, 76, 64, 84, 72, 91, 78, 96];
+  readonly months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+
+  get firstName(): string {
+    return this.auth.user()?.name.split(/\s+/)[0] || 'usuario';
+  }
 }

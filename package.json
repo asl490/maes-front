@@ -7,6 +7,7 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
+    "api:generate": "openapi-generator-cli generate --generator-key maes-angular",
     "serve:ssr:owner_template": "node dist/owner_template/server/server.mjs"
   },
   "private": true,
@@ -39,6 +40,7 @@
     "@angular/build": "^21.2.7",
     "@angular/cli": "^21.2.7",
     "@angular/compiler-cli": "^21.2.0",
+    "@openapitools/openapi-generator-cli": "^2.35.0",
     "@tailwindcss/postcss": "^4.1.12",
     "@types/express": "^5.0.1",
     "@types/node": "^20.17.19",

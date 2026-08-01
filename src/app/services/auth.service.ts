@@ -1,51 +1,195 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { computed, inject, Injectable, PLATFORM_ID, signal } from '@angular/core';
 import { Router } from '@angular/router';
+import { Observable, finalize, map, shareReplay, tap } from 'rxjs';
+import { AuthenticationService } from '../core/api/generated/api/authentication.service';
+import { AuthResponse } from '../core/api/generated/model/authResponse';
 
 export interface AuthUser {
+  id?: number;
   name: string;
   email: string;
   role: string;
   avatar: string;
 }
 
+interface AuthSession {
+  accessToken: string;
+  refreshToken: string;
+  user: AuthUser;
+  persistent: boolean;
+}
+
+interface JwtClaims {
+  [key: string]: unknown;
+}
+
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private readonly SESSION_KEY = 'nexadmin_session';
+  private readonly sessionKey = 'maes_auth_session';
+  private readonly api = inject(AuthenticationService);
+  private readonly router = inject(Router);
+  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
-  private _user = signal<AuthUser | null>(this.loadSession());
-  readonly user = this._user.asReadonly();
-  readonly isAuthenticated = computed(() => this._user() !== null);
+  private readonly session = signal<AuthSession | null>(this.loadSession());
+  private refreshRequest?: Observable<string>;
 
-  constructor(private router: Router) {}
+  readonly user = computed(() => this.session()?.user ?? null);
+  readonly isAuthenticated = computed(() => this.session() !== null);
 
-  login(email: string, password: string): boolean {
-    // Demo credentials
-    if (email === 'admin@nexadmin.com' && password === 'admin123') {
-      const user: AuthUser = {
-        name: 'David',
-        email: 'admin@nexadmin.com',
-        role: 'Administrator',
-        avatar: 'DV',
-      };
-      this._user.set(user);
-      localStorage.setItem(this.SESSION_KEY, JSON.stringify(user));
-      return true;
+  login(username: string, password: string, rememberMe: boolean): Observable<AuthUser> {
+    return this.api.authenticate({ username, password }).pipe(
+      map((response) => this.createSession(response, username, rememberMe)),
+      tap((session) => this.saveSession(session)),
+      map((session) => session.user),
+    );
+  }
+
+  logout(): void {
+    const refreshToken = this.session()?.refreshToken;
+
+    if (!refreshToken) {
+      this.clearSessionAndRedirect();
+      return;
     }
-    return false;
+
+    this.api.logout({ refreshToken }).pipe(
+      finalize(() => this.clearSessionAndRedirect()),
+    ).subscribe({ error: () => undefined });
   }
 
-  logout() {
-    this._user.set(null);
-    localStorage.removeItem(this.SESSION_KEY);
-    this.router.navigate(['/login']);
+  getAccessToken(): string | null {
+    return this.session()?.accessToken ?? null;
   }
 
-  private loadSession(): AuthUser | null {
+  hasRefreshToken(): boolean {
+    return Boolean(this.session()?.refreshToken);
+  }
+
+  refreshAccessToken(): Observable<string> {
+    if (this.refreshRequest) {
+      return this.refreshRequest;
+    }
+
+    const current = this.session();
+    if (!current?.refreshToken) {
+      throw new Error('No refresh token is available.');
+    }
+
+    this.refreshRequest = this.api.refreshToken({ refreshToken: current.refreshToken }).pipe(
+      map((response) => this.updateSessionTokens(current, response)),
+      tap((session) => this.saveSession(session)),
+      map((session) => session.accessToken),
+      finalize(() => { this.refreshRequest = undefined; }),
+      shareReplay({ bufferSize: 1, refCount: false }),
+    );
+
+    return this.refreshRequest;
+  }
+
+  expireSession(): void {
+    this.clearSessionAndRedirect();
+  }
+
+  private createSession(response: AuthResponse, username: string, persistent: boolean): AuthSession {
+    if (!response.accessToken || !response.refreshToken) {
+      throw new Error('Authentication response did not include the required tokens.');
+    }
+
+    const claims = this.decodeClaims(response.accessToken);
+    const displayName = this.stringClaim(claims, 'name')
+      ?? this.stringClaim(claims, 'preferred_username')
+      ?? username;
+    const email = this.stringClaim(claims, 'email') ?? username;
+
+    return {
+      accessToken: response.accessToken,
+      refreshToken: response.refreshToken,
+      persistent,
+      user: {
+        id: response.id,
+        name: displayName,
+        email,
+        role: this.readRole(claims),
+        avatar: this.initials(displayName),
+      },
+    };
+  }
+
+  private updateSessionTokens(current: AuthSession, response: AuthResponse): AuthSession {
+    if (!response.accessToken) {
+      throw new Error('Refresh response did not include an access token.');
+    }
+
+    return {
+      ...current,
+      accessToken: response.accessToken,
+      refreshToken: response.refreshToken ?? current.refreshToken,
+    };
+  }
+
+  private saveSession(session: AuthSession): void {
+    this.session.set(session);
+    if (!this.isBrowser) return;
+
+    localStorage.removeItem(this.sessionKey);
+    sessionStorage.removeItem(this.sessionKey);
+    this.storage(session.persistent).setItem(this.sessionKey, JSON.stringify(session));
+  }
+
+  private loadSession(): AuthSession | null {
+    if (!this.isBrowser) return null;
+
+    for (const storage of [sessionStorage, localStorage]) {
+      try {
+        const raw = storage.getItem(this.sessionKey);
+        if (!raw) continue;
+        const session = JSON.parse(raw) as AuthSession;
+        if (session.accessToken && session.refreshToken && session.user) return session;
+      } catch {
+        storage.removeItem(this.sessionKey);
+      }
+    }
+    return null;
+  }
+
+  private clearSessionAndRedirect(): void {
+    this.session.set(null);
+    if (this.isBrowser) {
+      localStorage.removeItem(this.sessionKey);
+      sessionStorage.removeItem(this.sessionKey);
+    }
+    void this.router.navigate(['/login']);
+  }
+
+  private storage(persistent: boolean): Storage {
+    return persistent ? localStorage : sessionStorage;
+  }
+
+  private decodeClaims(token: string): JwtClaims {
+    if (!this.isBrowser) return {};
     try {
-      const raw = localStorage.getItem(this.SESSION_KEY);
-      return raw ? JSON.parse(raw) : null;
+      const payload = token.split('.')[1];
+      if (!payload) return {};
+      const normalized = payload.replace(/-/g, '+').replace(/_/g, '/');
+      return JSON.parse(atob(normalized)) as JwtClaims;
     } catch {
-      return null;
+      return {};
     }
+  }
+
+  private stringClaim(claims: JwtClaims, key: string): string | null {
+    const value = claims[key];
+    return typeof value === 'string' && value.trim() ? value : null;
+  }
+
+  private readRole(claims: JwtClaims): string {
+    const value = claims['roles'] ?? claims['authorities'] ?? claims['role'];
+    if (Array.isArray(value)) return value.filter((role): role is string => typeof role === 'string').join(', ');
+    return typeof value === 'string' ? value : 'User';
+  }
+
+  private initials(name: string): string {
+    return name.split(/\s+/).filter(Boolean).slice(0, 2).map((part) => part[0]?.toUpperCase()).join('') || 'U';
   }
 }
