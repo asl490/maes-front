@@ -35,4 +35,8 @@ export class PeopleManagementService {
   delete(id: number): Observable<unknown> {
     return this.api.personDelete(id);
   }
+
+  restore(id: number): Observable<unknown> {
+    return this.api.personRestore(id);
+  }
 }

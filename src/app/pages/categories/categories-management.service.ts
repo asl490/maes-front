@@ -23,4 +23,5 @@ export class CategoriesManagementService {
   create(payload: CreateCategoryDTO): Observable<CategoryDTO> { return this.api.categoryCreate(payload); }
   update(id: number, payload: UpdateCategoryDTO): Observable<CategoryDTO> { return this.api.categoryUpdate(id, payload); }
   delete(id: number): Observable<unknown> { return this.api.categoryDelete(id); }
+  restore(id: number): Observable<unknown> { return this.api.categoryRestore(id); }
 }

@@ -80,6 +80,14 @@ export interface ComplementaryArticlesServiceInterface {
     /**
      * 
      * 
+     * @endpoint patch /complementary-articles/{id}/restore
+     * @param id 
+     */
+    complementaryArticleRestore(id: number, extraHttpRequestParams?: any): Observable<{}>;
+
+    /**
+     * 
+     * 
      * @endpoint put /complementary-articles/{id}
      * @param id 
      * @param updateComplementaryArticleDTO 

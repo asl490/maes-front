@@ -38,7 +38,7 @@ export interface FurnitureParametersServiceInterface {
     /**
      * 
      * 
-     * @endpoint post /furniture-parameters/batch
+     * @endpoint post /furniture-parameters/save-all
      * @param createFurnitureParameterDTO 
      */
     furnitureParameterCreateAll(createFurnitureParameterDTO: Array<CreateFurnitureParameterDTO>, extraHttpRequestParams?: any): Observable<Array<FurnitureParameterDTO>>;
@@ -57,6 +57,14 @@ export interface FurnitureParametersServiceInterface {
      * @endpoint get /furniture-parameters
      */
     furnitureParameterGetAll(extraHttpRequestParams?: any): Observable<Array<FurnitureParameterDTO>>;
+
+    /**
+     * 
+     * 
+     * @endpoint get /furniture-parameters/by-furniture/{furnitureId}
+     * @param furnitureId 
+     */
+    furnitureParameterGetAllByFurnitureId(furnitureId: number, extraHttpRequestParams?: any): Observable<Array<FurnitureParameterDTO>>;
 
     /**
      * 
@@ -84,6 +92,14 @@ export interface FurnitureParametersServiceInterface {
      * @param id 
      */
     furnitureParameterGetById(id: number, extraHttpRequestParams?: any): Observable<FurnitureParameterDTO>;
+
+    /**
+     * 
+     * 
+     * @endpoint patch /furniture-parameters/{id}/restore
+     * @param id 
+     */
+    furnitureParameterRestore(id: number, extraHttpRequestParams?: any): Observable<{}>;
 
     /**
      * 

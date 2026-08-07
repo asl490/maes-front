@@ -2,7 +2,6 @@ import { Routes } from '@angular/router';
 import { authGuard, guestGuard } from './guards/auth.guard';
 import { MainLayout } from './layouts/main-layout/main-layout';
 
-
 export const routes: Routes = [
   {
     path: '',
@@ -49,15 +48,35 @@ export const routes: Routes = [
       },
       {
         path: 'subcategories',
-        loadComponent: () => import('./pages/subcategories/subcategories').then((m) => m.Subcategories),
+        loadComponent: () =>
+          import('./pages/subcategories/subcategories').then((m) => m.Subcategories),
       },
       {
         path: 'furniture',
         loadComponent: () => import('./pages/furniture/furniture').then((m) => m.Furniture),
       },
       {
+        path: 'furniture/:id/configuration',
+        loadComponent: () =>
+          import('./pages/furniture-configuration/furniture-configuration').then(
+            (m) => m.FurnitureConfiguration,
+          ),
+      },
+      {
         path: 'parameters',
         loadComponent: () => import('./pages/parameters/parameters').then((m) => m.Parameters),
+      },
+      {
+        path: 'system-constants',
+        loadComponent: () =>
+          import('./pages/system-constants/system-constants').then((m) => m.SystemConstants),
+      },
+      {
+        path: 'complementary-articles',
+        loadComponent: () =>
+          import('./pages/complementary-articles/complementary-articles').then(
+            (m) => m.ComplementaryArticles,
+          ),
       },
       {
         path: 'settings',

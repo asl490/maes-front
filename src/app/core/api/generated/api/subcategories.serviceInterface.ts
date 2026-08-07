@@ -88,6 +88,14 @@ export interface SubcategoriesServiceInterface {
     /**
      * 
      * 
+     * @endpoint patch /subcategories/{id}/restore
+     * @param id 
+     */
+    subcategoryRestore(id: number, extraHttpRequestParams?: any): Observable<{}>;
+
+    /**
+     * 
+     * 
      * @endpoint put /subcategories/{id}
      * @param id 
      * @param updateSubcategoryDTO 

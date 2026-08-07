@@ -103,6 +103,14 @@ export interface PeopleServiceInterface {
     /**
      * 
      * 
+     * @endpoint patch /people/{id}/restore
+     * @param id 
+     */
+    personRestore(id: number, extraHttpRequestParams?: any): Observable<{}>;
+
+    /**
+     * 
+     * 
      * @endpoint put /people/{id}
      * @param id 
      * @param updatePersonDTO 

@@ -22,4 +22,5 @@ export class FurnitureManagementService {
   create(payload: CreateFurnitureDTO): Observable<FurnitureDTO> { return this.api.furnitureCreate(payload); }
   update(id: number, payload: UpdateFurnitureDTO): Observable<FurnitureDTO> { return this.api.furnitureUpdate(id, payload); }
   delete(id: number): Observable<unknown> { return this.api.furnitureDelete(id); }
+  restore(id: number): Observable<unknown> { return this.api.furnitureRestore(id); }
 }

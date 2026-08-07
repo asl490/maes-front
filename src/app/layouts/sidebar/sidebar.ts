@@ -69,6 +69,8 @@ export class Sidebar {
         { label: 'Subcategorías', route: '/app/subcategories', icon: 'subcategories' },
         { label: 'Muebles', route: '/app/furniture', icon: 'furniture' },
         { label: 'Parámetros', route: '/app/parameters', icon: 'parameters' },
+        { label: 'Constantes del sistema', route: '/app/system-constants', icon: 'system-constants' },
+        { label: 'Artículos complementarios', route: '/app/complementary-articles', icon: 'complementary-articles' },
       ],
     },
     {

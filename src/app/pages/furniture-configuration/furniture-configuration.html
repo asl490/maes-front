@@ -1,0 +1,511 @@
+<section class="-m-4 min-h-full bg-[#f7f7f8] p-4 sm:-m-6 sm:p-6 lg:p-8">
+  <div class="mx-auto max-w-7xl space-y-6">
+    <a
+      routerLink="/app/furniture"
+      class="inline-flex items-center gap-2 text-sm font-semibold text-slate-500 hover:text-red-700"
+      ><lucide-icon name="arrow-left" class="h-4 w-4" />Volver a muebles</a
+    >
+    <header class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+      <div>
+        <span
+          class="inline-flex items-center rounded-full border border-red-200 bg-red-50 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-red-700"
+          >Configuración técnica</span
+        >
+        <h1 class="mt-3 text-3xl font-black text-slate-950">{{ furniture()?.name || 'Mueble' }}</h1>
+        <p class="mt-1 text-sm text-slate-500">
+          {{ furniture()?.code || 'Sin código' }} · Define las reglas utilizadas para configurar y
+          calcular este mueble.
+        </p>
+      </div>
+      <div class="flex flex-wrap gap-2">
+        <button
+          class="btn-secondary"
+          (click)="testCalculation()"
+          [disabled]="loading() || !parameters().length"
+        >
+          <lucide-icon name="zap" class="h-4 w-4" />Probar cálculo
+        </button>
+        @if (activeSection() === 'parameters') {
+          <button
+            class="btn-primary"
+            (click)="addParameter()"
+            [disabled]="saving() || loading() || !availableParameters().length"
+          >
+            <lucide-icon name="plus" class="h-4 w-4" />Agregar parámetro
+          </button>
+        } @else if (activeSection() === 'constants') {
+          <button class="btn-primary" (click)="addConstant()" [disabled]="saving() || loading()">
+            <lucide-icon name="plus" class="h-4 w-4" />Agregar constante
+          </button>
+        } @else if (activeSection() === 'pieces') {
+          <button
+            class="btn-primary"
+            (click)="addPiece()"
+            [disabled]="saving() || loading() || !formulaVariables().length"
+          >
+            <lucide-icon name="plus" class="h-4 w-4" />Agregar pieza
+          </button>
+        } @else {
+          <button
+            class="btn-primary"
+            (click)="addArticle()"
+            [disabled]="saving() || loading() || !availableArticles().length"
+          >
+            <lucide-icon name="plus" class="h-4 w-4" />Agregar accesorio
+          </button>
+        }
+      </div>
+    </header>
+
+    <nav class="card flex gap-1 overflow-x-auto p-2" aria-label="Secciones de configuración">
+      <button
+        type="button"
+        (click)="showSection('parameters')"
+        [class]="
+          activeSection() === 'parameters'
+            ? 'rounded-xl bg-slate-950 px-4 py-2.5 text-sm font-bold text-white'
+            : 'rounded-xl px-4 py-2.5 text-sm font-medium text-slate-500 hover:bg-slate-100'
+        "
+      >
+        Parámetros <span class="ml-1 opacity-60">{{ parameters().length }}</span>
+      </button>
+      <button
+        type="button"
+        (click)="showSection('constants')"
+        [class]="
+          activeSection() === 'constants'
+            ? 'rounded-xl bg-slate-950 px-4 py-2.5 text-sm font-bold text-white'
+            : 'rounded-xl px-4 py-2.5 text-sm font-medium text-slate-500 hover:bg-slate-100'
+        "
+      >
+        Constantes <span class="ml-1 opacity-60">{{ constants().length }}</span>
+      </button>
+      <button
+        type="button"
+        (click)="showSection('pieces')"
+        [class]="
+          activeSection() === 'pieces'
+            ? 'rounded-xl bg-slate-950 px-4 py-2.5 text-sm font-bold text-white'
+            : 'rounded-xl px-4 py-2.5 text-sm font-medium text-slate-500 hover:bg-slate-100'
+        "
+      >
+        Piezas <span class="ml-1 opacity-60">{{ pieces().length }}</span>
+      </button>
+      <button
+        type="button"
+        (click)="showSection('articles')"
+        [class]="
+          activeSection() === 'articles'
+            ? 'rounded-xl bg-slate-950 px-4 py-2.5 text-sm font-bold text-white'
+            : 'rounded-xl px-4 py-2.5 text-sm font-medium text-slate-500 hover:bg-slate-100'
+        "
+      >
+        Accesorios <span class="ml-1 opacity-60">{{ articles().length }}</span>
+      </button>
+    </nav>
+    @if (error()) {
+      <div
+        class="flex items-center justify-between rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800"
+      >
+        <span>{{ error() }}</span
+        ><button class="font-bold" (click)="retry()">Reintentar</button>
+      </div>
+    }
+
+    @if (activeSection() === 'parameters') {
+      <div class="grid gap-6 lg:grid-cols-[1fr_280px]">
+        <div class="card overflow-hidden">
+          <div class="border-b border-slate-100 px-5 py-4">
+            <h2 class="font-bold text-slate-950">Parámetros del mueble</h2>
+            <p class="mt-1 text-sm text-slate-500">
+              Configura el rango permitido y el valor inicial de cada entrada.
+            </p>
+          </div>
+          @if (loading()) {
+            <app-loading message="Cargando configuración..." />
+          } @else {
+            <div class="divide-y divide-slate-100">
+              @for (item of parameters(); track item.id) {
+                <article
+                  class="flex flex-col gap-4 px-5 py-5 sm:flex-row sm:items-center sm:justify-between"
+                >
+                  <div class="flex items-center gap-3">
+                    <span
+                      class="flex h-11 w-11 items-center justify-center rounded-xl bg-slate-100 text-slate-700"
+                      ><lucide-icon name="ruler" class="h-5 w-5"
+                    /></span>
+                    <div>
+                      <p class="font-bold text-slate-900">{{ item.parameter?.name }}</p>
+                      <p class="text-xs text-slate-500">
+                        {{ item.parameter?.abbreviation || 'Sin abreviatura' }} ·
+                        {{ item.parameter?.type || 'NUMBER' }} ·
+                        {{ item.parameter?.unit || 'Sin unidad' }}
+                      </p>
+                    </div>
+                  </div>
+                  <div class="flex flex-wrap items-center gap-3 sm:justify-end">
+                    <div class="rounded-xl bg-slate-50 px-3 py-2 text-center">
+                      <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                        Mínimo
+                      </p>
+                      <p class="text-sm font-bold">{{ item.minValue }}</p>
+                    </div>
+                    <div class="rounded-xl bg-red-50 px-3 py-2 text-center">
+                      <p class="text-[10px] font-bold uppercase tracking-wider text-red-400">
+                        Inicial
+                      </p>
+                      <p class="text-sm font-bold text-red-700">{{ item.defaultValue }}</p>
+                    </div>
+                    <div class="rounded-xl bg-slate-50 px-3 py-2 text-center">
+                      <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                        Máximo
+                      </p>
+                      <p class="text-sm font-bold">{{ item.maxValue }}</p>
+                    </div>
+                    <button
+                      class="btn-action-info"
+                      title="Editar"
+                      (click)="editParameter(item)"
+                      [disabled]="saving()"
+                    >
+                      <lucide-icon name="pencil" class="h-3.5 w-3.5" /></button
+                    ><button
+                      class="btn-action-danger"
+                      title="Quitar"
+                      (click)="removeParameter(item)"
+                      [disabled]="saving()"
+                    >
+                      <lucide-icon name="trash-2" class="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                </article>
+              } @empty {
+                <div class="px-6 py-16 text-center">
+                  <span
+                    class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 text-slate-500"
+                    ><lucide-icon name="ruler" class="h-6 w-6"
+                  /></span>
+                  <h3 class="mt-4 font-bold text-slate-900">Aún no hay parámetros</h3>
+                  <p class="mx-auto mt-1 max-w-md text-sm text-slate-500">
+                    Agrega las medidas o cantidades que el usuario deberá proporcionar.
+                  </p>
+                  <button
+                    class="btn-primary mt-5"
+                    (click)="addParameter()"
+                    [disabled]="!availableParameters().length"
+                  >
+                    Agregar primer parámetro
+                  </button>
+                </div>
+              }
+            </div>
+          }
+        </div>
+        <aside class="card h-fit p-5 lg:sticky lg:top-6">
+          <p class="text-xs font-bold uppercase tracking-wider text-slate-400">Estado actual</p>
+          <p class="mt-3 text-3xl font-black text-slate-950">{{ parameters().length }}</p>
+          <p class="text-sm text-slate-500">parámetros asociados</p>
+          <div class="mt-5 rounded-xl bg-slate-50 p-4 text-sm text-slate-600">
+            <p class="font-bold text-slate-800">Regla de validación</p>
+            <p class="mt-1">El valor inicial siempre debe estar entre el mínimo y el máximo.</p>
+          </div>
+        </aside>
+      </div>
+    } @else if (activeSection() === 'constants') {
+      <div class="grid gap-6 lg:grid-cols-[1fr_280px]">
+        <div class="card overflow-hidden">
+          <div class="border-b border-slate-100 px-5 py-4">
+            <h2 class="font-bold text-slate-950">Constantes del mueble</h2>
+            <p class="mt-1 text-sm text-slate-500">
+              Valores técnicos fijos que estarán disponibles en las fórmulas.
+            </p>
+          </div>
+          @if (loading()) {
+            <app-loading message="Cargando constantes..." />
+          } @else {
+            <div class="divide-y divide-slate-100">
+              @for (item of constants(); track item.id) {
+                <article
+                  class="flex flex-col gap-4 px-5 py-5 sm:flex-row sm:items-center sm:justify-between"
+                >
+                  <div class="flex min-w-0 items-center gap-3">
+                    <span
+                      class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-red-50 font-mono text-sm font-black text-red-700"
+                      >ƒ</span
+                    >
+                    <div class="min-w-0">
+                      <p class="font-bold text-slate-900">{{ item.name }}</p>
+                      <p class="truncate text-xs text-slate-500">
+                        {{ item.description || 'Sin descripción' }}
+                      </p>
+                    </div>
+                  </div>
+                  <div class="flex flex-wrap items-center gap-3 sm:justify-end">
+                    <code
+                      class="rounded-lg bg-slate-100 px-2.5 py-1.5 text-xs font-bold text-slate-700"
+                      >{{ item.symbol }}</code
+                    >
+                    <div class="min-w-24 rounded-xl bg-red-50 px-3 py-2 text-center">
+                      <p class="text-[10px] font-bold uppercase tracking-wider text-red-400">
+                        Valor
+                      </p>
+                      <p class="text-sm font-bold text-red-700">
+                        {{ item.value }} {{ item.unit || '' }}
+                      </p>
+                    </div>
+                    <button
+                      class="btn-action-info"
+                      title="Editar"
+                      (click)="editConstant(item)"
+                      [disabled]="saving()"
+                    >
+                      <lucide-icon name="pencil" class="h-3.5 w-3.5" /></button
+                    ><button
+                      class="btn-action-danger"
+                      title="Quitar"
+                      (click)="removeConstant(item)"
+                      [disabled]="saving()"
+                    >
+                      <lucide-icon name="trash-2" class="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                </article>
+              } @empty {
+                <div class="px-6 py-16 text-center">
+                  <span
+                    class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-red-50 text-xl font-black text-red-700"
+                    >ƒ</span
+                  >
+                  <h3 class="mt-4 font-bold text-slate-900">Aún no hay constantes</h3>
+                  <p class="mx-auto mt-1 max-w-md text-sm text-slate-500">
+                    Agrega valores técnicos como espesores, holguras o porcentajes.
+                  </p>
+                  <button class="btn-primary mt-5" (click)="addConstant()">
+                    Agregar primera constante
+                  </button>
+                </div>
+              }
+            </div>
+          }
+        </div>
+        <aside class="card h-fit p-5 lg:sticky lg:top-6">
+          <p class="text-xs font-bold uppercase tracking-wider text-slate-400">Estado actual</p>
+          <p class="mt-3 text-3xl font-black text-slate-950">{{ constants().length }}</p>
+          <p class="text-sm text-slate-500">constantes definidas</p>
+          <div class="mt-5 rounded-xl bg-slate-50 p-4 text-sm text-slate-600">
+            <p class="font-bold text-slate-800">Símbolos estables</p>
+            <p class="mt-1">
+              Usa nombres como <code>DOOR_GAP</code>. Después serán referenciados por las fórmulas
+              de piezas y accesorios.
+            </p>
+          </div>
+        </aside>
+      </div>
+    } @else if (activeSection() === 'pieces') {
+      <div class="grid gap-6 lg:grid-cols-[1fr_280px]">
+        <div class="card overflow-hidden">
+          <div class="border-b border-slate-100 px-5 py-4">
+            <h2 class="font-bold text-slate-950">Piezas de melamina</h2>
+            <p class="mt-1 text-sm text-slate-500">
+              Despiece calculado mediante parámetros y constantes del mueble.
+            </p>
+          </div>
+          @if (loading()) {
+            <app-loading message="Cargando piezas..." />
+          } @else {
+            <div class="divide-y divide-slate-100">
+              @for (item of pieces(); track item.id) {
+                <article class="flex flex-col gap-4 px-5 py-5">
+                  <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                    <div>
+                      <div class="flex items-center gap-2">
+                        <p class="font-bold text-slate-900">{{ item.pieceName }}</p>
+                        <span
+                          class="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold uppercase text-slate-600"
+                          >{{ item.category }}</span
+                        >
+                        @if (item.hasGrain) {
+                          <span
+                            class="rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-bold text-amber-700"
+                            >Con veta</span
+                          >
+                        }
+                      </div>
+                      <p class="mt-1 text-xs text-slate-500">
+                        {{ item.description || 'Sin descripción' }} · Cantidad {{ item.quantity }}
+                      </p>
+                    </div>
+                    <div class="flex gap-1">
+                      <button
+                        class="btn-action-info"
+                        title="Editar"
+                        (click)="editPiece(item)"
+                        [disabled]="saving()"
+                      >
+                        <lucide-icon name="pencil" class="h-3.5 w-3.5" /></button
+                      ><button
+                        class="btn-action-danger"
+                        title="Quitar"
+                        (click)="removePiece(item)"
+                        [disabled]="saving()"
+                      >
+                        <lucide-icon name="trash-2" class="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                  </div>
+                  <div class="grid gap-3 sm:grid-cols-2">
+                    <div class="rounded-xl bg-slate-50 p-3">
+                      <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                        Fórmula de largo
+                      </p>
+                      <code class="mt-1 block text-sm font-bold text-slate-800">{{
+                        item.lengthFormula
+                      }}</code>
+                    </div>
+                    <div class="rounded-xl bg-slate-50 p-3">
+                      <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                        Fórmula de ancho
+                      </p>
+                      <code class="mt-1 block text-sm font-bold text-slate-800">{{
+                        item.widthFormula
+                      }}</code>
+                    </div>
+                  </div>
+                </article>
+              } @empty {
+                <div class="px-6 py-16 text-center">
+                  <span
+                    class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 text-slate-700"
+                    ><lucide-icon name="ruler" class="h-6 w-6"
+                  /></span>
+                  <h3 class="mt-4 font-bold text-slate-900">Aún no hay piezas</h3>
+                  <p class="mx-auto mt-1 max-w-md text-sm text-slate-500">
+                    Define parámetros y constantes, luego crea las fórmulas de largo y ancho.
+                  </p>
+                  <button
+                    class="btn-primary mt-5"
+                    (click)="addPiece()"
+                    [disabled]="!formulaVariables().length"
+                  >
+                    Agregar primera pieza
+                  </button>
+                </div>
+              }
+            </div>
+          }
+        </div>
+        <aside class="card h-fit p-5 lg:sticky lg:top-6">
+          <p class="text-xs font-bold uppercase tracking-wider text-slate-400">Estado actual</p>
+          <p class="mt-3 text-3xl font-black text-slate-950">{{ pieces().length }}</p>
+          <p class="text-sm text-slate-500">piezas definidas</p>
+          <div class="mt-5 rounded-xl bg-slate-50 p-4 text-sm text-slate-600">
+            <p class="font-bold text-slate-800">Variables disponibles</p>
+            <div class="mt-2 flex flex-wrap gap-1">
+              @for (variable of formulaVariables(); track variable) {
+                <code class="rounded bg-white px-1.5 py-1 text-xs">{{ variable }}</code>
+              } @empty {
+                <span class="text-xs text-amber-700">Primero agrega parámetros o constantes.</span>
+              }
+            </div>
+          </div>
+        </aside>
+      </div>
+    } @else {
+      <div class="grid gap-6 lg:grid-cols-[1fr_280px]">
+        <div class="card overflow-hidden">
+          <div class="border-b border-slate-100 px-5 py-4">
+            <h2 class="font-bold text-slate-950">Accesorios del mueble</h2>
+            <p class="mt-1 text-sm text-slate-500">
+              Artículos complementarios necesarios y su cantidad fija.
+            </p>
+          </div>
+          @if (loading()) {
+            <app-loading message="Cargando accesorios..." />
+          } @else {
+            <div class="divide-y divide-slate-100">
+              @for (item of articles(); track item.id) {
+                <article
+                  class="flex flex-col gap-4 px-5 py-5 sm:flex-row sm:items-center sm:justify-between"
+                >
+                  <div class="flex min-w-0 items-center gap-3">
+                    <span
+                      class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-700"
+                      ><lucide-icon name="settings" class="h-5 w-5"
+                    /></span>
+                    <div class="min-w-0">
+                      <p class="font-bold text-slate-900">{{ item.complementaryArticle?.name }}</p>
+                      <p class="truncate text-xs text-slate-500">
+                        {{ item.complementaryArticle?.code || 'Sin código' }} ·
+                        {{ item.complementaryArticle?.description || 'Sin descripción' }}
+                      </p>
+                    </div>
+                  </div>
+                  <div class="flex flex-wrap items-center gap-3 sm:justify-end">
+                    <div class="min-w-28 rounded-xl bg-red-50 px-3 py-2 text-center">
+                      <p class="text-[10px] font-bold uppercase tracking-wider text-red-400">
+                        Cantidad
+                      </p>
+                      <p class="text-sm font-bold text-red-700">
+                        {{ item.quantity }} {{ item.complementaryArticle?.unit || '' }}
+                      </p>
+                    </div>
+                    <button
+                      class="btn-action-info"
+                      title="Editar"
+                      (click)="editArticle(item)"
+                      [disabled]="saving()"
+                    >
+                      <lucide-icon name="pencil" class="h-3.5 w-3.5" /></button
+                    ><button
+                      class="btn-action-danger"
+                      title="Quitar"
+                      (click)="removeArticle(item)"
+                      [disabled]="saving()"
+                    >
+                      <lucide-icon name="trash-2" class="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                </article>
+              } @empty {
+                <div class="px-6 py-16 text-center">
+                  <span
+                    class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 text-slate-600"
+                    ><lucide-icon name="settings" class="h-6 w-6"
+                  /></span>
+                  <h3 class="mt-4 font-bold text-slate-900">Aún no hay accesorios</h3>
+                  <p class="mx-auto mt-1 max-w-md text-sm text-slate-500">
+                    Asocia bisagras, tiradores, correderas u otros artículos necesarios.
+                  </p>
+                  <button
+                    class="btn-primary mt-5"
+                    (click)="addArticle()"
+                    [disabled]="!availableArticles().length"
+                  >
+                    Agregar primer accesorio
+                  </button>
+                </div>
+              }
+            </div>
+          }
+        </div>
+        <aside class="card h-fit p-5 lg:sticky lg:top-6">
+          <p class="text-xs font-bold uppercase tracking-wider text-slate-400">Estado actual</p>
+          <p class="mt-3 text-3xl font-black text-slate-950">{{ articles().length }}</p>
+          <p class="text-sm text-slate-500">accesorios asociados</p>
+          <div class="mt-5 rounded-xl bg-slate-50 p-4 text-sm text-slate-600">
+            <p class="font-bold text-slate-800">Alcance actual</p>
+            <p class="mt-1">
+              Las cantidades son fijas. Las fórmulas por parámetros requerirán una ampliación
+              posterior del contrato.
+            </p>
+          </div>
+          @if (!availableArticles().length && articleCatalog().length) {
+            <p class="mt-4 text-xs font-medium text-emerald-700">
+              Todos los artículos activos ya fueron asociados.
+            </p>
+          }
+        </aside>
+      </div>
+    }
+  </div>
+</section>

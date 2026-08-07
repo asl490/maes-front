@@ -27,4 +27,8 @@ export class UserManagementService {
   delete(id: number): Observable<unknown> {
     return this.api.userDelete(id);
   }
+
+  restore(id: number): Observable<unknown> {
+    return this.api.userRestore(id);
+  }
 }

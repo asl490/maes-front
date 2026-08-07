@@ -38,7 +38,7 @@ export interface FurnitureMelaminePiecesServiceInterface {
     /**
      * 
      * 
-     * @endpoint post /furniture-melamine-pieces/batch
+     * @endpoint post /furniture-melamine-pieces/save-all
      * @param createFurnitureMelaminePieceDTO 
      */
     furnitureMelaminePieceCreateAll(createFurnitureMelaminePieceDTO: Array<CreateFurnitureMelaminePieceDTO>, extraHttpRequestParams?: any): Observable<Array<FurnitureMelaminePieceDTO>>;
@@ -92,6 +92,14 @@ export interface FurnitureMelaminePiecesServiceInterface {
      * @param id 
      */
     furnitureMelaminePieceGetById(id: number, extraHttpRequestParams?: any): Observable<FurnitureMelaminePieceDTO>;
+
+    /**
+     * 
+     * 
+     * @endpoint patch /furniture-melamine-pieces/{id}/restore
+     * @param id 
+     */
+    furnitureMelaminePieceRestore(id: number, extraHttpRequestParams?: any): Observable<{}>;
 
     /**
      * 

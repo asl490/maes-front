@@ -80,6 +80,14 @@ export interface SystemConstantsServiceInterface {
     /**
      * 
      * 
+     * @endpoint patch /system-constants/{id}/restore
+     * @param id 
+     */
+    constantSystemRestore(id: number, extraHttpRequestParams?: any): Observable<{}>;
+
+    /**
+     * 
+     * 
      * @endpoint put /system-constants/{id}
      * @param id 
      * @param updateConstantSystemDTO 

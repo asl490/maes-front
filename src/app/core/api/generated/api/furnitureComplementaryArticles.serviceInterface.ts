@@ -38,7 +38,7 @@ export interface FurnitureComplementaryArticlesServiceInterface {
     /**
      * 
      * 
-     * @endpoint post /furniture-complementary-articles/batch
+     * @endpoint post /furniture-complementary-articles/save-all
      * @param createFurnitureComplementaryArticleDTO 
      */
     furnitureComplementaryArticleCreateAll(createFurnitureComplementaryArticleDTO: Array<CreateFurnitureComplementaryArticleDTO>, extraHttpRequestParams?: any): Observable<Array<FurnitureComplementaryArticleDTO>>;
@@ -92,6 +92,14 @@ export interface FurnitureComplementaryArticlesServiceInterface {
      * @param id 
      */
     furnitureComplementaryArticleGetById(id: number, extraHttpRequestParams?: any): Observable<FurnitureComplementaryArticleDTO>;
+
+    /**
+     * 
+     * 
+     * @endpoint patch /furniture-complementary-articles/{id}/restore
+     * @param id 
+     */
+    furnitureComplementaryArticleRestore(id: number, extraHttpRequestParams?: any): Observable<{}>;
 
     /**
      * 

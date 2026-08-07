@@ -14,8 +14,11 @@ import { Observable }                                        from 'rxjs';
 import { CreateFurnitureDTO } from '../model/models';
 import { ErrorResponse } from '../model/models';
 import { FiltersFurnitureDTO } from '../model/models';
+import { FurnitureConfigurationDTO } from '../model/models';
+import { FurnitureConfigurationImportDTO } from '../model/models';
 import { FurnitureDTO } from '../model/models';
 import { PagedResponseFurnitureDTO } from '../model/models';
+import { SaveFurnitureConfigurationDTO } from '../model/models';
 import { UpdateFurnitureDTO } from '../model/models';
 
 
@@ -42,6 +45,21 @@ export interface FurnitureServiceInterface {
      * @param id 
      */
     furnitureDelete(id: number, extraHttpRequestParams?: any): Observable<{}>;
+
+    /**
+     * 
+     * 
+     * @endpoint get /furniture/configuration/template
+     */
+    furnitureDownloadConfigurationTemplate(extraHttpRequestParams?: any): Observable<string>;
+
+    /**
+     * 
+     * 
+     * @endpoint get /furniture/{furnitureId}/configuration/export
+     * @param furnitureId 
+     */
+    furnitureExportConfiguration(furnitureId: number, extraHttpRequestParams?: any): Observable<string>;
 
     /**
      * 
@@ -96,10 +114,53 @@ export interface FurnitureServiceInterface {
     /**
      * 
      * 
+     * @endpoint get /furniture/{furnitureId}/configuration
+     * @param furnitureId 
+     */
+    furnitureGetConfiguration(furnitureId: number, extraHttpRequestParams?: any): Observable<FurnitureConfigurationDTO>;
+
+    /**
+     * 
+     * 
+     * @endpoint post /furniture/{furnitureId}/configuration/import
+     * @param furnitureId 
+     * @param file 
+     */
+    furnitureImportConfiguration(furnitureId: number, file: Blob, extraHttpRequestParams?: any): Observable<FurnitureConfigurationDTO>;
+
+    /**
+     * 
+     * 
+     * @endpoint put /furniture/{furnitureId}/configuration
+     * @param furnitureId 
+     * @param saveFurnitureConfigurationDTO 
+     */
+    furnitureReplaceConfiguration(furnitureId: number, saveFurnitureConfigurationDTO: SaveFurnitureConfigurationDTO, extraHttpRequestParams?: any): Observable<FurnitureConfigurationDTO>;
+
+    /**
+     * 
+     * 
+     * @endpoint patch /furniture/{id}/restore
+     * @param id 
+     */
+    furnitureRestore(id: number, extraHttpRequestParams?: any): Observable<{}>;
+
+    /**
+     * 
+     * 
      * @endpoint put /furniture/{id}
      * @param id 
      * @param updateFurnitureDTO 
      */
     furnitureUpdate(id: number, updateFurnitureDTO: UpdateFurnitureDTO, extraHttpRequestParams?: any): Observable<FurnitureDTO>;
+
+    /**
+     * 
+     * 
+     * @endpoint post /furniture/{furnitureId}/configuration/import/validate
+     * @param furnitureId 
+     * @param file 
+     */
+    furnitureValidateConfigurationImport(furnitureId: number, file: Blob, extraHttpRequestParams?: any): Observable<FurnitureConfigurationImportDTO>;
 
 }

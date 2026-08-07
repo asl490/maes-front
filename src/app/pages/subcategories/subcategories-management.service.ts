@@ -31,4 +31,5 @@ export class SubcategoriesManagementService {
   create(payload: CreateSubcategoryDTO): Observable<SubcategoryDTO> { return this.api.subcategoryCreate(payload); }
   update(id: number, payload: UpdateSubcategoryDTO): Observable<SubcategoryDTO> { return this.api.subcategoryUpdate(id, payload); }
   delete(id: number): Observable<unknown> { return this.api.subcategoryDelete(id); }
+  restore(id: number): Observable<unknown> { return this.api.subcategoryRestore(id); }
 }

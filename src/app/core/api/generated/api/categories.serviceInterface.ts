@@ -80,6 +80,14 @@ export interface CategoriesServiceInterface {
     /**
      * 
      * 
+     * @endpoint patch /categories/{id}/restore
+     * @param id 
+     */
+    categoryRestore(id: number, extraHttpRequestParams?: any): Observable<{}>;
+
+    /**
+     * 
+     * 
      * @endpoint put /categories/{id}
      * @param id 
      * @param updateCategoryDTO 

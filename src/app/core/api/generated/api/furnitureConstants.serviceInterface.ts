@@ -38,7 +38,7 @@ export interface FurnitureConstantsServiceInterface {
     /**
      * 
      * 
-     * @endpoint post /furniture-constants/batch
+     * @endpoint post /furniture-constants/save-all
      * @param createFurnitureConstantDTO 
      */
     furnitureConstantCreateAll(createFurnitureConstantDTO: Array<CreateFurnitureConstantDTO>, extraHttpRequestParams?: any): Observable<Array<FurnitureConstantDTO>>;
@@ -92,6 +92,14 @@ export interface FurnitureConstantsServiceInterface {
      * @param id 
      */
     furnitureConstantGetById(id: number, extraHttpRequestParams?: any): Observable<FurnitureConstantDTO>;
+
+    /**
+     * 
+     * 
+     * @endpoint patch /furniture-constants/{id}/restore
+     * @param id 
+     */
+    furnitureConstantRestore(id: number, extraHttpRequestParams?: any): Observable<{}>;
 
     /**
      * 

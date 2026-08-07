@@ -78,6 +78,14 @@ export interface UsersServiceInterface {
     userGetById(id: number, extraHttpRequestParams?: any): Observable<UserDTO>;
 
     /**
+     * 
+     * 
+     * @endpoint patch /users/{id}/restore
+     * @param id 
+     */
+    userRestore(id: number, extraHttpRequestParams?: any): Observable<{}>;
+
+    /**
      * Update user
      * Updates an existing user. Requires authentication.
      * @endpoint put /users/{id}

@@ -1,5 +1,4 @@
 .gitignore
-.openapi-generator-ignore
 README.md
 api.base.service.ts
 api.module.ts
@@ -28,6 +27,8 @@ api/parameters.service.ts
 api/parameters.serviceInterface.ts
 api/people.service.ts
 api/people.serviceInterface.ts
+api/scalarApiReferenceController.service.ts
+api/scalarApiReferenceController.serviceInterface.ts
 api/subcategories.service.ts
 api/subcategories.serviceInterface.ts
 api/systemConstants.service.ts
@@ -78,11 +79,15 @@ model/filtersUserDTO.ts
 model/furnitureCalculationRequest.ts
 model/furnitureCalculationResponse.ts
 model/furnitureComplementaryArticleDTO.ts
+model/furnitureConfigurationDTO.ts
+model/furnitureConfigurationImportDTO.ts
 model/furnitureConstantDTO.ts
 model/furnitureDTO.ts
 model/furnitureMelaminePieceDTO.ts
 model/furnitureParameterDTO.ts
 model/furnitureSummary.ts
+model/importError.ts
+model/importSummary.ts
 model/inputValueSnapshot.ts
 model/models.ts
 model/pagedResponseCategoryDTO.ts
@@ -103,6 +108,7 @@ model/personDTO.ts
 model/pieceSnapshot.ts
 model/refreshTokenRequest.ts
 model/registerRequest.ts
+model/saveFurnitureConfigurationDTO.ts
 model/subcategoryDTO.ts
 model/updateCategoryDTO.ts
 model/updateComplementaryArticleDTO.ts

@@ -80,6 +80,14 @@ export interface ParametersServiceInterface {
     /**
      * 
      * 
+     * @endpoint patch /parameters/{id}/restore
+     * @param id 
+     */
+    parameterRestore(id: number, extraHttpRequestParams?: any): Observable<{}>;
+
+    /**
+     * 
+     * 
      * @endpoint put /parameters/{id}
      * @param id 
      * @param updateParameterDTO 
