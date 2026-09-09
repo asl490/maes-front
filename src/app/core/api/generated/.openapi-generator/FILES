@@ -106,7 +106,6 @@ model/parameterDTO.ts
 model/parameterValue.ts
 model/personDTO.ts
 model/pieceSnapshot.ts
-model/refreshTokenRequest.ts
 model/registerRequest.ts
 model/saveFurnitureConfigurationDTO.ts
 model/subcategoryDTO.ts

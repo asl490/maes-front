@@ -15,7 +15,6 @@ export interface AuthUser {
 
 interface AuthSession {
   accessToken: string;
-  refreshToken: string;
   user: AuthUser;
   persistent: boolean;
 }
@@ -46,14 +45,12 @@ export class AuthService {
   }
 
   logout(): void {
-    const refreshToken = this.session()?.refreshToken;
-
-    if (!refreshToken) {
+    if (!this.session()) {
       this.clearSessionAndRedirect();
       return;
     }
 
-    this.api.logout({ refreshToken }).pipe(
+    this.api.logout().pipe(
       finalize(() => this.clearSessionAndRedirect()),
     ).subscribe({ error: () => undefined });
   }
@@ -62,8 +59,8 @@ export class AuthService {
     return this.session()?.accessToken ?? null;
   }
 
-  hasRefreshToken(): boolean {
-    return Boolean(this.session()?.refreshToken);
+  canRefreshSession(): boolean {
+    return this.session() !== null;
   }
 
   refreshAccessToken(): Observable<string> {
@@ -72,11 +69,11 @@ export class AuthService {
     }
 
     const current = this.session();
-    if (!current?.refreshToken) {
-      throw new Error('No refresh token is available.');
+    if (!current) {
+      throw new Error('No authenticated session is available.');
     }
 
-    this.refreshRequest = this.api.refreshToken({ refreshToken: current.refreshToken }).pipe(
+    this.refreshRequest = this.api.refreshToken().pipe(
       map((response) => this.updateSessionTokens(current, response)),
       tap((session) => this.saveSession(session)),
       map((session) => session.accessToken),
@@ -92,8 +89,8 @@ export class AuthService {
   }
 
   private createSession(response: AuthResponse, username: string, persistent: boolean): AuthSession {
-    if (!response.accessToken || !response.refreshToken) {
-      throw new Error('Authentication response did not include the required tokens.');
+    if (!response.accessToken) {
+      throw new Error('Authentication response did not include an access token.');
     }
 
     const claims = this.decodeClaims(response.accessToken);
@@ -104,7 +101,6 @@ export class AuthService {
 
     return {
       accessToken: response.accessToken,
-      refreshToken: response.refreshToken,
       persistent,
       user: {
         id: response.id,
@@ -124,7 +120,6 @@ export class AuthService {
     return {
       ...current,
       accessToken: response.accessToken,
-      refreshToken: response.refreshToken ?? current.refreshToken,
     };
   }
 
@@ -145,7 +140,14 @@ export class AuthService {
         const raw = storage.getItem(this.sessionKey);
         if (!raw) continue;
         const session = JSON.parse(raw) as AuthSession;
-        if (session.accessToken && session.refreshToken && session.user) return session;
+        if (session.accessToken && session.user) {
+          // Rebuild the object so refresh tokens left by older versions are discarded.
+          return {
+            accessToken: session.accessToken,
+            user: session.user,
+            persistent: session.persistent,
+          };
+        }
       } catch {
         storage.removeItem(this.sessionKey);
       }

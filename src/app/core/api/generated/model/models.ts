@@ -64,7 +64,6 @@ export * from './parameterDTO';
 export * from './parameterValue';
 export * from './personDTO';
 export * from './pieceSnapshot';
-export * from './refreshTokenRequest';
 export * from './registerRequest';
 export * from './saveFurnitureConfigurationDTO';
 export * from './subcategoryDTO';

@@ -12,7 +12,6 @@
 export interface AuthResponse { 
     id?: number;
     accessToken?: string;
-    refreshToken?: string;
     ultimoLogin?: string;
     creado?: string;
     modificado?: string;

@@ -10,7 +10,7 @@
 
 
 export interface RegisterRequest { 
-    username?: string;
+    username: string;
     password?: string;
 }
 

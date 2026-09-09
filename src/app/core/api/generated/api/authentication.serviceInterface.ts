@@ -14,7 +14,6 @@ import { Observable }                                        from 'rxjs';
 import { AuthResponse } from '../model/models';
 import { AuthenticationRequest } from '../model/models';
 import { ErrorResponse } from '../model/models';
-import { RefreshTokenRequest } from '../model/models';
 import { RegisterRequest } from '../model/models';
 
 
@@ -38,17 +37,21 @@ export interface AuthenticationServiceInterface {
      * Logout a user
      * Invalidates a user\&#39;s refresh token and logs them out.
      * @endpoint post /auth/logout
-     * @param refreshTokenRequest 
+     * @param maesRefresh 
+     * @param maesCsrf 
+     * @param xCSRFToken 
      */
-    logout(refreshTokenRequest: RefreshTokenRequest, extraHttpRequestParams?: any): Observable<{}>;
+    logout(maesRefresh?: string, maesCsrf?: string, xCSRFToken?: string, extraHttpRequestParams?: any): Observable<{}>;
 
     /**
      * Refresh a user\&#39;s access token
      * Refreshes a user\&#39;s access token using a valid refresh token.
      * @endpoint post /auth/refresh-token
-     * @param refreshTokenRequest 
+     * @param maesRefresh 
+     * @param maesCsrf 
+     * @param xCSRFToken 
      */
-    refreshToken(refreshTokenRequest: RefreshTokenRequest, extraHttpRequestParams?: any): Observable<AuthResponse>;
+    refreshToken(maesRefresh?: string, maesCsrf?: string, xCSRFToken?: string, extraHttpRequestParams?: any): Observable<AuthResponse>;
 
     /**
      * Register a new user

@@ -21,7 +21,7 @@ export const authInterceptor: HttpInterceptorFn = (request, next) => {
         && error.status === 401
         && !isAuthRequest
         && !request.headers.has(RETRY_HEADER)
-        && auth.hasRefreshToken();
+        && auth.canRefreshSession();
 
       if (!canRefresh) return throwError(() => error);
 

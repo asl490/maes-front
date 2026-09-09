@@ -29,7 +29,6 @@ describe('AuthService', () => {
     api.authenticate.mockReturnValue(of({
       id: 7,
       accessToken: 'header.payload.signature',
-      refreshToken: 'refresh-token',
     }));
     const service = TestBed.inject(AuthService);
 
@@ -42,22 +41,20 @@ describe('AuthService', () => {
     expect(localStorage.getItem('maes_auth_session')).toBeNull();
   });
 
-  it('rotates access and refresh tokens', () => {
+  it('refreshes the access token using the HttpOnly cookie', () => {
     api.authenticate.mockReturnValue(of({
       accessToken: 'access-one',
-      refreshToken: 'refresh-one',
     }));
     api.refreshToken.mockReturnValue(of({
       accessToken: 'access-two',
-      refreshToken: 'refresh-two',
     }));
     const service = TestBed.inject(AuthService);
     service.login('admin', 'secret1', true).subscribe();
 
     service.refreshAccessToken().subscribe((token) => expect(token).toBe('access-two'));
 
-    expect(api.refreshToken).toHaveBeenCalledWith({ refreshToken: 'refresh-one' });
+    expect(api.refreshToken).toHaveBeenCalledWith();
     expect(service.getAccessToken()).toBe('access-two');
-    expect(localStorage.getItem('maes_auth_session')).toContain('refresh-two');
+    expect(localStorage.getItem('maes_auth_session')).not.toContain('refresh');
   });
 });
