@@ -16,5 +16,7 @@ export interface SubcategoryDTO {
     name?: string;
     description?: string;
     status?: string;
+    imageFileId?: number;
+    imageUrl?: string;
 }
 

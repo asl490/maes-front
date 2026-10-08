@@ -11,7 +11,6 @@
 
 export interface UpdateFurnitureDTO { 
     subcategory?: number;
-    code?: string;
     name?: string;
     description?: string;
     status?: string;

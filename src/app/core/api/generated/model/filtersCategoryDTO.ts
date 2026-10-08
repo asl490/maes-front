@@ -10,6 +10,7 @@
 
 
 export interface FiltersCategoryDTO { 
+    code?: string;
     name?: string;
     description?: string;
     status?: string;

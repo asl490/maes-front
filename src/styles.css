@@ -165,6 +165,15 @@ body {
     color 0.2s ease;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+}
+
 ::-webkit-scrollbar {
   width: 4px;
   height: 4px;
@@ -207,6 +216,152 @@ body {
 .btn-primary:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+/* CTA principal de la experiencia pública. Replica el tratamiento del panel. */
+.public-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: 0;
+  border-radius: 999px;
+  color: #ffffff;
+  background: linear-gradient(90deg, #ef233c, #dc0a2f 55%, #c90024);
+  box-shadow: 0 10px 24px rgba(220, 10, 47, 0.18);
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    filter 0.2s ease;
+}
+.public-btn-primary:hover:not(:disabled, [aria-disabled='true']) {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 28px rgba(220, 10, 47, 0.24);
+}
+.public-btn-primary:focus-visible {
+  outline: 3px solid rgba(239, 35, 60, 0.32);
+  outline-offset: 3px;
+}
+.public-btn-primary:active:not(:disabled, [aria-disabled='true']) {
+  transform: translateY(1px);
+  box-shadow: 0 6px 16px rgba(220, 10, 47, 0.22);
+  filter: brightness(0.96);
+}
+.public-btn-primary:disabled,
+.public-btn-primary[aria-disabled='true'] {
+  opacity: 0.58;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.public-btn-on-brand,
+.public-btn-outline-on-brand {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  font-weight: 700;
+  transition:
+    transform 0.2s ease,
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+.public-btn-on-brand {
+  border: 1px solid #ffffff;
+  background: #ffffff;
+  color: #b70727;
+  box-shadow: 0 10px 24px rgba(90, 0, 18, 0.22);
+}
+.public-btn-on-brand:hover {
+  transform: translateY(-1px);
+  background: #fff1f2;
+  box-shadow: 0 14px 28px rgba(90, 0, 18, 0.28);
+}
+.public-btn-outline-on-brand {
+  border: 1px solid rgba(255, 255, 255, 0.58);
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+}
+.public-btn-outline-on-brand:hover {
+  transform: translateY(-1px);
+  border-color: #ffffff;
+  background: rgba(255, 255, 255, 0.18);
+}
+.public-btn-on-brand:focus-visible,
+.public-btn-outline-on-brand:focus-visible {
+  outline: 3px solid rgba(255, 255, 255, 0.72);
+  outline-offset: 3px;
+}
+.public-btn-on-brand:active,
+.public-btn-outline-on-brand:active {
+  transform: translateY(1px);
+}
+
+/* Ritmo y superficies compartidos de la página pública. */
+.public-section {
+  padding: 5rem 1.5rem;
+}
+.public-container {
+  width: 100%;
+  max-width: 80rem;
+  margin-inline: auto;
+}
+.public-heading-block {
+  max-width: 44rem;
+  margin: 0 auto 3rem;
+  text-align: center;
+}
+.public-section-title {
+  margin: 0;
+  color: #0f172a;
+  font-size: clamp(1.875rem, 4vw, 3rem);
+  font-weight: 900;
+  line-height: 1.08;
+  letter-spacing: -0.035em;
+}
+.public-section-copy {
+  max-width: 42rem;
+  margin: 1rem auto 0;
+  color: #475569;
+  font-size: clamp(1rem, 2vw, 1.125rem);
+  line-height: 1.7;
+}
+.public-section-dark .public-section-title {
+  color: #ffffff;
+}
+.public-section-dark .public-section-copy {
+  color: #cbd5e1;
+}
+.public-card {
+  border: 1px solid #e2e8f0;
+  border-radius: 1.25rem;
+  background: #ffffff;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.045);
+  transition:
+    transform 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+.public-card:hover {
+  transform: translateY(-4px);
+  border-color: #fecdd3;
+  box-shadow: 0 16px 36px rgba(15, 23, 42, 0.09);
+}
+.public-media-frame {
+  overflow: hidden;
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  border-radius: 1.5rem;
+  box-shadow: 0 20px 45px rgba(15, 23, 42, 0.16);
+}
+@media (max-width: 639px) {
+  .public-section {
+    padding: 4rem 1rem;
+  }
+  .public-heading-block {
+    margin-bottom: 2.25rem;
+  }
 }
 
 .btn-secondary {

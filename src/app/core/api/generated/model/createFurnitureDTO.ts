@@ -10,8 +10,7 @@
 
 
 export interface CreateFurnitureDTO { 
-    subcategory?: number;
-    code?: string;
+    subcategory: number;
     name: string;
     description?: string;
     status?: string;

@@ -18,10 +18,11 @@ import { ModalService } from '../../shared/modal/modal.service';
 import { Paginator } from '../../shared/paginator/paginator';
 import { SubcategoriesManagementService } from './subcategories-management.service';
 import { SubcategoryEditModal, SubcategoryFormValue } from './subcategory-edit.modal';
+import { StatusLabelPipe } from '../../shared/status-label.pipe';
 
 @Component({
   selector: 'app-subcategories',
-  imports: [LucideAngularModule, Loading, Paginator],
+  imports: [LucideAngularModule, Loading, Paginator, StatusLabelPipe],
   templateUrl: './subcategories.html',
   styleUrl: '../../shared/admin-feature.css',
 })
@@ -119,6 +120,7 @@ export class Subcategories {
         name: item.name,
         description: item.description,
         status: item.status,
+        imageUrl: item.imageUrl,
       },
     });
     ref.closed.subscribe((value) => {
@@ -172,7 +174,7 @@ export class Subcategories {
   private create(value: SubcategoryFormValue): void {
     this.saving.set(true);
     this.management
-      .create(value)
+      .createWithImage(value)
       .pipe(finalize(() => this.saving.set(false)))
       .subscribe({
         next: () => {
@@ -185,7 +187,7 @@ export class Subcategories {
   private update(id: number, value: SubcategoryFormValue): void {
     this.saving.set(true);
     this.management
-      .update(id, value)
+      .updateWithImage(id, value)
       .pipe(finalize(() => this.saving.set(false)))
       .subscribe({ next: () => this.load(), error: (error) => this.setError(error) });
   }

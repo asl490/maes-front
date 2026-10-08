@@ -12,6 +12,7 @@ import { LucideAngularModule } from 'lucide-angular';
 import { finalize, forkJoin } from 'rxjs';
 import { FurnitureDTO } from '../../core/api/generated/model/furnitureDTO';
 import { FurnitureConstantDTO } from '../../core/api/generated/model/furnitureConstantDTO';
+import { EffectiveFurnitureConstantDTO } from '../../core/api/generated/model/effectiveFurnitureConstantDTO';
 import { FurnitureParameterDTO } from '../../core/api/generated/model/furnitureParameterDTO';
 import { ParameterDTO } from '../../core/api/generated/model/parameterDTO';
 import { ComplementaryArticleDTO } from '../../core/api/generated/model/complementaryArticleDTO';
@@ -54,6 +55,7 @@ export class FurnitureConfiguration {
   readonly furniture = signal<FurnitureDTO | null>(null);
   readonly parameters = signal<FurnitureParameterDTO[]>([]);
   readonly constants = signal<FurnitureConstantDTO[]>([]);
+  readonly effectiveConstants = signal<EffectiveFurnitureConstantDTO[]>([]);
   readonly articles = signal<FurnitureComplementaryArticleDTO[]>([]);
   readonly articleCatalog = signal<ComplementaryArticleDTO[]>([]);
   readonly pieces = signal<FurnitureMelaminePieceDTO[]>([]);
@@ -161,7 +163,7 @@ export class FurnitureConfiguration {
   addConstant(): void {
     this.openConstantModal({
       mode: 'create',
-      usedSymbols: this.constants().map((item) => item.symbol?.toUpperCase() ?? ''),
+      usedSymbols: this.effectiveConstants().map((item) => item.symbol?.toUpperCase() ?? ''),
     });
   }
 
@@ -181,6 +183,21 @@ export class FurnitureConfiguration {
       },
       item.id,
     );
+  }
+
+  overrideConstant(item: EffectiveFurnitureConstantDTO): void {
+    this.openConstantModal({
+      mode: 'create',
+      usedSymbols: this.constants().map((constant) => constant.symbol?.toUpperCase() ?? ''),
+      name: item.name,
+      symbol: item.symbol,
+      value: item.value,
+      unit: item.unit,
+    });
+  }
+
+  ownConstant(item: EffectiveFurnitureConstantDTO): FurnitureConstantDTO | undefined {
+    return this.constants().find((constant) => constant.id === item.sourceId);
   }
 
   async removeConstant(item: FurnitureConstantDTO): Promise<void> {
@@ -248,7 +265,7 @@ export class FurnitureConfiguration {
       ...new Set(
         [
           ...this.parameters().map((item) => item.parameter?.abbreviation),
-          ...this.constants().map((item) => item.symbol),
+          ...this.effectiveConstants().map((item) => item.symbol),
         ]
           .map((value) => value?.trim().toUpperCase())
           .filter((value): value is string => !!value),
@@ -270,20 +287,20 @@ export class FurnitureConfiguration {
           ]
         : [],
     );
-    const constants = this.constants().flatMap((item) =>
-      item.symbol
-        ? [
-            {
-              symbol: item.symbol.trim().toUpperCase(),
-              label: item.name ?? item.symbol,
-              source: 'CONSTANT' as const,
-              detail: [item.value, item.unit]
-                .filter((value) => value !== undefined && value !== '')
-                .join(' '),
-            },
-          ]
-        : [],
-    );
+    const constantsBySymbol = new Map<string, FormulaVariable>();
+    for (const item of this.effectiveConstants()) {
+      const symbol = item.symbol?.trim().toUpperCase();
+      if (!symbol) continue;
+      constantsBySymbol.set(symbol, {
+        symbol,
+        label: item.name ?? symbol,
+        source: 'CONSTANT',
+        detail: [item.value, item.unit, item.origin === 'CATEGORY' ? 'Categoría' : 'Mueble']
+          .filter((value) => value !== undefined && value !== '')
+          .join(' · '),
+      });
+    }
+    const constants = [...constantsBySymbol.values()];
     return [...parameters, ...constants].filter(
       (item, index, all) =>
         all.findIndex((candidate) => candidate.symbol === item.symbol) === index,
@@ -332,6 +349,7 @@ export class FurnitureConfiguration {
       furniture: this.management.getFurniture(this.furnitureId),
       parameters: this.management.listParameters(this.furnitureId),
       constants: this.management.listConstants(this.furnitureId),
+      effectiveConstants: this.management.listEffectiveConstants(this.furnitureId),
       articles: this.management.listArticles(this.furnitureId),
       articleCatalog: this.management.listArticleCatalog(),
       pieces: this.management.listPieces(this.furnitureId),
@@ -339,10 +357,11 @@ export class FurnitureConfiguration {
     })
       .pipe(finalize(() => this.loading.set(false)))
       .subscribe({
-        next: ({ furniture, parameters, constants, articles, articleCatalog, pieces, catalog }) => {
+        next: ({ furniture, parameters, constants, effectiveConstants, articles, articleCatalog, pieces, catalog }) => {
           this.furniture.set(furniture);
           this.parameters.set(parameters);
           this.constants.set(constants);
+          this.effectiveConstants.set(effectiveConstants);
           this.articles.set(articles);
           this.articleCatalog.set(articleCatalog);
           this.pieces.set(pieces);

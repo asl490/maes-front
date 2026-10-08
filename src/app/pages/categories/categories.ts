@@ -17,10 +17,12 @@ import { ModalService } from '../../shared/modal/modal.service';
 import { Paginator } from '../../shared/paginator/paginator';
 import { CategoriesManagementService } from './categories-management.service';
 import { CategoryEditModal, CategoryFormValue } from './category-edit.modal';
+import { CategoryConstantsModal } from './category-constants.modal';
+import { StatusLabelPipe } from '../../shared/status-label.pipe';
 
 @Component({
   selector: 'app-categories',
-  imports: [LucideAngularModule, Loading, Paginator],
+  imports: [LucideAngularModule, Loading, Paginator, StatusLabelPipe],
   templateUrl: './categories.html',
   styleUrl: '../../shared/admin-feature.css',
 })
@@ -86,10 +88,16 @@ export class Categories {
   editCategory(category: CategoryDTO): void {
     const ref = this.modal.open<CategoryEditModal, CategoryFormValue>(CategoryEditModal, {
       size: 'md',
-      data: { mode: 'edit', ...category },
+      data: { mode: 'edit', ...category, imageUrl: category.imageUrl },
     });
     ref.closed.subscribe((value) => {
       if (value && category.id) this.update(category.id, value);
+    });
+  }
+  manageConstants(category: CategoryDTO): void {
+    if (!category.id) return;
+    this.modal.open<CategoryConstantsModal, void>(CategoryConstantsModal, {
+      size: 'lg', data: { categoryId: category.id, categoryName: category.name ?? 'categoría' },
     });
   }
   async deleteCategory(category: CategoryDTO): Promise<void> {
@@ -159,7 +167,7 @@ export class Categories {
     this.saving.set(true);
     this.error.set('');
     this.management
-      .create(value)
+      .createWithImage(value)
       .pipe(finalize(() => this.saving.set(false)))
       .subscribe({
         next: () => {
@@ -173,7 +181,7 @@ export class Categories {
     this.saving.set(true);
     this.error.set('');
     this.management
-      .update(id, value)
+      .updateWithImage(id, value)
       .pipe(finalize(() => this.saving.set(false)))
       .subscribe({ next: () => this.load(), error: (error) => this.setError(error) });
   }

@@ -78,7 +78,7 @@
             : 'rounded-xl px-4 py-2.5 text-sm font-medium text-slate-500 hover:bg-slate-100'
         "
       >
-        Constantes <span class="ml-1 opacity-60">{{ constants().length }}</span>
+        Constantes <span class="ml-1 opacity-60">{{ effectiveConstants().length }}</span>
       </button>
       <button
         type="button"
@@ -224,7 +224,7 @@
             <app-loading message="Cargando constantes..." />
           } @else {
             <div class="divide-y divide-slate-100">
-              @for (item of constants(); track item.id) {
+              @for (item of effectiveConstants(); track item.symbol) {
                 <article
                   class="flex flex-col gap-4 px-5 py-5 sm:flex-row sm:items-center sm:justify-between"
                 >
@@ -238,6 +238,10 @@
                       <p class="truncate text-xs text-slate-500">
                         {{ item.description || 'Sin descripción' }}
                       </p>
+                      <div class="mt-1 flex flex-wrap gap-1.5">
+                        <span class="rounded-full px-2 py-0.5 text-[10px] font-bold uppercase" [class]="item.origin === 'CATEGORY' ? 'bg-blue-50 text-blue-700' : 'bg-emerald-50 text-emerald-700'">{{ item.origin === 'CATEGORY' ? 'Categoría' : 'Mueble' }}</span>
+                        @if (item.overridesCategory) { <span class="rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-bold uppercase text-amber-700">Sobrescribe categoría</span> }
+                      </div>
                     </div>
                   </div>
                   <div class="flex flex-wrap items-center gap-3 sm:justify-end">
@@ -253,21 +257,25 @@
                         {{ item.value }} {{ item.unit || '' }}
                       </p>
                     </div>
+                    @if (item.origin === 'FURNITURE' && ownConstant(item); as local) {
                     <button
                       class="btn-action-info"
                       title="Editar"
-                      (click)="editConstant(item)"
+                      (click)="editConstant(local)"
                       [disabled]="saving()"
                     >
                       <lucide-icon name="pencil" class="h-3.5 w-3.5" /></button
                     ><button
                       class="btn-action-danger"
                       title="Quitar"
-                      (click)="removeConstant(item)"
+                      (click)="removeConstant(local)"
                       [disabled]="saving()"
                     >
                       <lucide-icon name="trash-2" class="h-3.5 w-3.5" />
                     </button>
+                    } @else {
+                      <button class="btn-action-info" title="Sobrescribir para este mueble" (click)="overrideConstant(item)" [disabled]="saving()">Sobrescribir</button>
+                    }
                   </div>
                 </article>
               } @empty {
@@ -290,8 +298,8 @@
         </div>
         <aside class="card h-fit p-5 lg:sticky lg:top-6">
           <p class="text-xs font-bold uppercase tracking-wider text-slate-400">Estado actual</p>
-          <p class="mt-3 text-3xl font-black text-slate-950">{{ constants().length }}</p>
-          <p class="text-sm text-slate-500">constantes definidas</p>
+          <p class="mt-3 text-3xl font-black text-slate-950">{{ effectiveConstants().length }}</p>
+          <p class="text-sm text-slate-500">constantes disponibles (categoría + mueble)</p>
           <div class="mt-5 rounded-xl bg-slate-50 p-4 text-sm text-slate-600">
             <p class="font-bold text-slate-800">Símbolos estables</p>
             <p class="mt-1">

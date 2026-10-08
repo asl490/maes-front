@@ -4,6 +4,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { CategoriesService } from '../../core/api/generated/api/categories.service';
 import { SubcategoriesService } from '../../core/api/generated/api/subcategories.service';
 import { SubcategoriesManagementService } from './subcategories-management.service';
+import { ImageStorageService } from '../../shared/image-storage/image-storage.service';
 
 describe('SubcategoriesManagementService', () => {
   const api = {
@@ -14,11 +15,13 @@ describe('SubcategoriesManagementService', () => {
     subcategoryDelete: vi.fn(),
   };
   const categoriesApi = { categoryGetAll: vi.fn() };
+  const images = { uploadAndAssign: vi.fn() };
   function service(): SubcategoriesManagementService {
     TestBed.configureTestingModule({
       providers: [
         { provide: SubcategoriesService, useValue: api },
         { provide: CategoriesService, useValue: categoriesApi },
+        { provide: ImageStorageService, useValue: images },
       ],
     });
     return TestBed.inject(SubcategoriesManagementService);

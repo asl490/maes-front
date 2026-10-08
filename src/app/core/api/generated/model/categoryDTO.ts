@@ -11,8 +11,11 @@
 
 export interface CategoryDTO { 
     id?: number;
+    code?: string;
     name?: string;
     description?: string;
     status?: string;
+    imageFileId?: number;
+    imageUrl?: string;
 }
 

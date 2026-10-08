@@ -1,11 +1,11 @@
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CategoryDTO } from '../../core/api/generated/model/categoryDTO';
 import { ModalComponent } from '../../shared/modal/modal.component';
 
-export interface SubcategoryFormValue { category: number; name: string; description?: string; status: string; }
-export interface SubcategoryModalData extends Partial<SubcategoryFormValue> { mode: 'create' | 'edit'; categories: CategoryDTO[]; }
+export interface SubcategoryFormValue { category: number; name: string; description?: string; status: string; image?: File; }
+export interface SubcategoryModalData extends Partial<SubcategoryFormValue> { mode: 'create' | 'edit'; categories: CategoryDTO[]; imageUrl?: string; }
 
 @Component({
   selector: 'app-subcategory-edit-modal', imports: [ReactiveFormsModule, ModalComponent], styleUrl: '../../shared/admin-feature.css',
@@ -15,6 +15,13 @@ export interface SubcategoryModalData extends Partial<SubcategoryFormValue> { mo
         <div><label class="mb-1.5 block text-xs font-medium text-muted">Categoría *</label><select class="input" formControlName="category"><option [ngValue]="0" disabled>Selecciona una categoría</option>@for (category of data.categories; track category.id) {<option [ngValue]="category.id">{{ category.name }}</option>}</select></div>
         <div><label class="mb-1.5 block text-xs font-medium text-muted">Nombre *</label><input class="input" formControlName="name" /></div>
         <div><label class="mb-1.5 block text-xs font-medium text-muted">Descripción</label><textarea class="input min-h-24 resize-y" formControlName="description"></textarea></div>
+        <div>
+          <label class="mb-1.5 block text-xs font-medium text-muted">Imagen</label>
+          @if (previewUrl()) { <img [src]="previewUrl()" alt="Vista previa" class="mb-3 h-32 w-full rounded-lg object-cover" /> }
+          <input class="input" type="file" accept="image/jpeg,image/png,image/webp" (change)="selectImage($event)" />
+          <p class="mt-1 text-xs text-muted">JPG, PNG o WebP. Máximo 10 MB.</p>
+          @if (imageError()) { <p class="mt-1 text-xs text-red-600">{{ imageError() }}</p> }
+        </div>
         <div><label class="mb-1.5 block text-xs font-medium text-muted">Estado</label><select class="input" formControlName="status"><option value="ACTIVE">Activa</option><option value="INACTIVE">Inactiva</option></select></div>
       </form>
       <div modal-footer class="modal-footer"><button class="btn-secondary" type="button" (click)="close()">Cancelar</button><button class="btn-primary" type="button" (click)="save()" [disabled]="form.invalid">{{ data.mode === 'create' ? 'Crear subcategoría' : 'Guardar cambios' }}</button></div>
@@ -25,13 +32,32 @@ export class SubcategoryEditModal {
   private readonly ref = inject<DialogRef<SubcategoryFormValue>>(DialogRef);
   private readonly formBuilder = inject(FormBuilder);
   readonly data = inject<SubcategoryModalData>(DIALOG_DATA);
+  readonly previewUrl = signal(this.data.imageUrl ?? '');
+  readonly imageError = signal('');
+  private image?: File;
   readonly form = this.formBuilder.nonNullable.group({
     category: [this.data.category ?? 0, Validators.min(1)], name: [this.data.name ?? '', Validators.required],
     description: [this.data.description ?? ''], status: [this.data.status ?? 'ACTIVE', Validators.required],
   });
   close(): void { this.ref.close(); }
+  selectImage(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    this.imageError.set('');
+    if (!file) return;
+    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+      this.imageError.set('Selecciona una imagen JPG, PNG o WebP.'); input.value = ''; return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      this.imageError.set('La imagen no puede superar los 10 MB.'); input.value = ''; return;
+    }
+    this.image = file;
+    const reader = new FileReader();
+    reader.onload = () => this.previewUrl.set(String(reader.result ?? ''));
+    reader.readAsDataURL(file);
+  }
   save(): void {
-    this.form.markAllAsTouched(); if (this.form.invalid) return;
-    const value = this.form.getRawValue(); this.ref.close({ ...value, name: value.name.trim(), description: value.description.trim() || undefined });
+    this.form.markAllAsTouched(); if (this.form.invalid || this.imageError()) return;
+    const value = this.form.getRawValue(); this.ref.close({ ...value, name: value.name.trim(), description: value.description.trim() || undefined, image: this.image });
   }
 }

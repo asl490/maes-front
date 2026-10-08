@@ -125,7 +125,7 @@
                           : 'border-slate-200 bg-slate-100 text-slate-600'
                       "
                       class="rounded-full border px-2.5 py-1 text-xs font-semibold"
-                      >{{ isActive(item) ? 'Activo' : item.status || 'Sin estado' }}</span
+                      >{{ item.status | statusLabel }}</span
                     >
                   </td>
                   <td class="px-5 py-4">

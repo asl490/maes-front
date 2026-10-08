@@ -1,4 +1,6 @@
 import { TestBed } from '@angular/core/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting, HttpTestingController } from '@angular/common/http/testing';
 import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 import { FurnitureService } from '../../core/api/generated/api/furniture.service';
@@ -10,6 +12,7 @@ import { FurnitureMelaminePiecesService } from '../../core/api/generated/api/fur
 import { FurnitureCalculationsService } from '../../core/api/generated/api/furnitureCalculations.service';
 import { ParametersService } from '../../core/api/generated/api/parameters.service';
 import { FurnitureConfigurationService } from './furniture-configuration.service';
+import { Configuration } from '../../core/api/generated/configuration';
 
 describe('FurnitureConfigurationService', () => {
   const furnitureApi = { furnitureGetById: vi.fn() };
@@ -43,6 +46,9 @@ describe('FurnitureConfigurationService', () => {
   function service() {
     TestBed.configureTestingModule({
       providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        { provide: Configuration, useValue: new Configuration({ basePath: 'http://test/api/v1' }) },
         { provide: FurnitureService, useValue: furnitureApi },
         { provide: FurnitureParametersService, useValue: furnitureParametersApi },
         { provide: FurnitureConstantsService, useValue: furnitureConstantsApi },
@@ -95,6 +101,15 @@ describe('FurnitureConfigurationService', () => {
     expect(furnitureConstantsApi.furnitureConstantCreate).toHaveBeenCalledWith(payload);
     expect(furnitureConstantsApi.furnitureConstantUpdate).toHaveBeenCalledWith(1, payload);
     expect(furnitureConstantsApi.furnitureConstantDelete).toHaveBeenCalledWith(1);
+  });
+  it('loads effective inherited and furniture constants', () => {
+    const value = service();
+    const http = TestBed.inject(HttpTestingController);
+    let result: unknown;
+    value.listEffectiveConstants(4).subscribe((response) => (result = response));
+    const request = http.expectOne('http://test/api/v1/furniture-constants/effective/by-furniture/4');
+    request.flush([{ sourceId: 9, symbol: 'THICKNESS', origin: 'CATEGORY' }]);
+    expect(result).toEqual([{ sourceId: 9, symbol: 'THICKNESS', origin: 'CATEGORY' }]);
   });
   it('loads the catalog and mutates furniture accessories', () => {
     const payload = { furniture: 4, complementaryArticle: 7, quantity: 2 };

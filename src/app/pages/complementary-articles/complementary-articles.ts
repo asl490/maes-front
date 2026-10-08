@@ -10,8 +10,9 @@ import { ModalService } from '../../shared/modal/modal.service';
 import { Paginator } from '../../shared/paginator/paginator';
 import { ComplementaryArticleEditModal, ComplementaryArticleFormValue } from './complementary-article-edit.modal';
 import { ComplementaryArticlesManagementService } from './complementary-articles-management.service';
+import { StatusLabelPipe } from '../../shared/status-label.pipe';
 
-@Component({ selector: 'app-complementary-articles', imports: [LucideAngularModule, Loading, Paginator], templateUrl: './complementary-articles.html', styleUrl: '../../shared/admin-feature.css' })
+@Component({ selector: 'app-complementary-articles', imports: [LucideAngularModule, Loading, Paginator, StatusLabelPipe], templateUrl: './complementary-articles.html', styleUrl: '../../shared/admin-feature.css' })
 export class ComplementaryArticles {
   private readonly management = inject(ComplementaryArticlesManagementService); private readonly modal = inject(ModalService); private readonly alert = inject(AlertService); private readonly changeDetector = inject(ChangeDetectorRef);
   readonly loading = signal(true); readonly saving = signal(false); readonly error = signal(''); readonly articles = signal<ComplementaryArticleDTO[]>([]); readonly filters = signal<FiltersComplementaryArticleDTO>({}); readonly page = signal(1); readonly pageSize = signal(10); readonly total = signal(0); readonly activeCount = computed(() => this.articles().filter((item) => item.status?.toUpperCase() === 'ACTIVE').length);

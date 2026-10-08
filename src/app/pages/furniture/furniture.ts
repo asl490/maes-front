@@ -19,10 +19,11 @@ import { ModalService } from '../../shared/modal/modal.service';
 import { Paginator } from '../../shared/paginator/paginator';
 import { FurnitureEditModal, FurnitureFormValue } from './furniture-edit.modal';
 import { FurnitureManagementService } from './furniture-management.service';
+import { StatusLabelPipe } from '../../shared/status-label.pipe';
 
 @Component({
   selector: 'app-furniture',
-  imports: [LucideAngularModule, Loading, Paginator, RouterLink],
+  imports: [LucideAngularModule, Loading, Paginator, RouterLink, StatusLabelPipe],
   templateUrl: './furniture.html',
   styleUrl: '../../shared/admin-feature.css',
 })
@@ -119,7 +120,6 @@ export class Furniture {
         mode: 'edit',
         subcategories: this.subcategories(),
         subcategory: item.subcategory?.id,
-        code: item.code,
         name: item.name,
         description: item.description,
         status: item.status,

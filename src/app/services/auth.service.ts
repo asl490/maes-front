@@ -50,13 +50,21 @@ export class AuthService {
       return;
     }
 
-    this.api.logout().pipe(
+    this.api.logout(undefined, undefined, this.readCookie('maes_csrf') ?? undefined).pipe(
       finalize(() => this.clearSessionAndRedirect()),
     ).subscribe({ error: () => undefined });
   }
 
   getAccessToken(): string | null {
     return this.session()?.accessToken ?? null;
+  }
+
+  isAccessTokenExpiring(leewaySeconds = 5): boolean {
+    const token = this.getAccessToken();
+    if (!token) return false;
+    const expiration = this.decodeClaims(token)['exp'];
+    return typeof expiration === 'number'
+      && expiration * 1000 <= Date.now() + leewaySeconds * 1000;
   }
 
   canRefreshSession(): boolean {
@@ -73,7 +81,11 @@ export class AuthService {
       throw new Error('No authenticated session is available.');
     }
 
-    this.refreshRequest = this.api.refreshToken().pipe(
+    this.refreshRequest = this.api.refreshToken(
+      undefined,
+      undefined,
+      this.readCookie('maes_csrf') ?? undefined,
+    ).pipe(
       map((response) => this.updateSessionTokens(current, response)),
       tap((session) => this.saveSession(session)),
       map((session) => session.accessToken),
@@ -166,6 +178,23 @@ export class AuthService {
 
   private storage(persistent: boolean): Storage {
     return persistent ? localStorage : sessionStorage;
+  }
+
+  private readCookie(name: string): string | null {
+    if (!this.isBrowser) return null;
+
+    const prefix = `${encodeURIComponent(name)}=`;
+    const cookie = document.cookie
+      .split(';')
+      .map((part) => part.trim())
+      .find((part) => part.startsWith(prefix));
+
+    if (!cookie) return null;
+    try {
+      return decodeURIComponent(cookie.slice(prefix.length));
+    } catch {
+      return cookie.slice(prefix.length);
+    }
   }
 
   private decodeClaims(token: string): JwtClaims {

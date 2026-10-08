@@ -1,0 +1,59 @@
+<div class="catalog-page">
+  <header class="catalog-header">
+    <div class="header-inner">
+      <a routerLink="/" class="brand" aria-label="Volver al inicio"><span class="brand-mark"><img src="/logo.png" alt="" /></span><span><strong>MAES IA</strong><small>Diseñador de muebles</small></span></a>
+      <div class="step-status" aria-label="Progreso de personalización">
+        @for (label of ['Mueble', 'Color', 'Medidas', 'Resumen']; track label; let index = $index) {
+          <span [class.active]="currentStep() >= index + 1"><b>{{ index + 1 }}</b><em>{{ label }}</em></span>
+        }
+      </div>
+      <a routerLink="/" class="exit-link">Salir</a>
+    </div>
+  </header>
+
+  <main class="catalog-main">
+    @if (currentStep() === 1) {
+      <section class="catalog-hero">
+        <span class="eyebrow">Catálogo oficial</span>
+        <h1>Encuentra el mueble ideal para tu espacio</h1>
+        <p>Explora los modelos disponibles, filtra según lo que necesitas y personalízalo paso a paso.</p>
+      </section>
+
+      <section class="filters" aria-label="Filtros del catálogo">
+        <label class="search-field"><span>Buscar</span><div><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><input type="search" placeholder="Nombre, código o tipo de mueble" [ngModel]="search()" (ngModelChange)="search.set($event)" /></div></label>
+        <label><span>Categoría</span><select [ngModel]="category()" (ngModelChange)="updateCategory($event)"><option value="">Todas</option>@for (item of categories(); track item) {<option [value]="item">{{ item }}</option>}</select></label>
+        <label><span>Subcategoría</span><select [ngModel]="subcategory()" (ngModelChange)="subcategory.set($event)"><option value="">Todas</option>@for (item of subcategories(); track item) {<option [value]="item">{{ item }}</option>}</select></label>
+        <label><span>Precio máximo</span><select [ngModel]="maxPrice() ?? ''" (ngModelChange)="maxPrice.set($event ? +$event : null)"><option value="">Sin límite</option><option value="500">S/ 500</option><option value="1000">S/ 1,000</option><option value="2000">S/ 2,000</option><option value="5000">S/ 5,000</option></select></label>
+        <label><span>Ordenar</span><select [ngModel]="sort()" (ngModelChange)="sort.set($event)"><option value="name">Nombre</option><option value="price-asc">Menor precio</option><option value="price-desc">Mayor precio</option></select></label>
+      </section>
+
+      <div class="results-bar"><p><strong>{{ filteredFurniture().length }}</strong> muebles disponibles</p>@if (hasFilters()) {<button type="button" (click)="clearFilters()">Limpiar filtros</button>}</div>
+
+      @if (error()) {
+        <div class="state-card error-state"><div><strong>No se pudo cargar el catálogo</strong><p>{{ error() }}</p></div><button type="button" (click)="loadFurniture()">Reintentar</button></div>
+      } @else if (loading()) {
+        <div class="furniture-grid" aria-label="Cargando muebles">@for (item of [1,2,3,4,5,6]; track item) {<div class="skeleton-card"><span></span><i></i><i></i></div>}</div>
+      } @else {
+        <div class="furniture-grid">
+          @for (item of filteredFurniture(); track trackFurniture($index, item)) {
+            <article class="furniture-card">
+              <div class="furniture-image"><img [src]="imageFor(item)" [alt]="item.name ?? 'Mueble'" /><span>{{ item.subcategory?.category?.name || 'Mueble' }}</span></div>
+              <div class="furniture-content"><div class="card-meta"><small>{{ item.code || 'Modelo disponible' }}</small>@if (item.basePrice) {<strong>Desde {{ formatPrice(item.basePrice) }}</strong>}</div><h2>{{ item.name }}</h2><p>{{ item.description || 'Personaliza este modelo con el color y las medidas de tu espacio.' }}</p><div class="classification"><span>{{ item.subcategory?.name || 'Sin clasificación' }}</span></div><button type="button" (click)="selectFurniture(item)">Personalizar este mueble <span>→</span></button></div>
+            </article>
+          } @empty {
+            <div class="empty-state"><div>⌕</div><h2>No encontramos muebles</h2><p>Prueba con otra palabra o elimina algunos filtros.</p><button type="button" (click)="clearFilters()">Ver todo el catálogo</button></div>
+          }
+        </div>
+      }
+    } @else {
+      <section class="wizard-shell" [class.summary-shell]="currentStep() === 4">
+        <div class="wizard-context"><button type="button" (click)="goToCatalog()">← Volver al catálogo</button><div><span>Personalizando</span><strong>{{ selection.model?.name }}</strong></div></div>
+        @switch (currentStep()) {
+          @case (2) { <app-step-color [selectedModel]="selection.model" [selectedColor]="selection.color" (colorSelected)="onColorSelected($event)" (next)="nextStep()" (back)="prevStep()" /> }
+          @case (3) { <app-step-dimensions [furnitureType]="selection.furnitureType" [selectedModel]="selection.model" [dimensions]="selection.dimensions" (dimensionsChanged)="onDimensionsChanged($event)" (next)="nextStep()" (back)="prevStep()" /> }
+          @case (4) { <app-step-summary [selection]="selection" (reset)="reset()" /> }
+        }
+      </section>
+    }
+  </main>
+</div>

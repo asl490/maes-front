@@ -104,7 +104,7 @@
                         <p class="text-sm font-semibold text-slate-900">
                           {{ category.name || 'Sin nombre' }}
                         </p>
-                        <p class="text-xs text-slate-400">ID {{ category.id }}</p>
+                        <p class="text-xs text-slate-400">{{ category.code || 'Sin código' }} · ID {{ category.id }}</p>
                       </div>
                     </div>
                   </td>
@@ -119,7 +119,7 @@
                           : 'border-slate-200 bg-slate-100 text-slate-600'
                       "
                       class="inline-flex rounded-full border px-2.5 py-1 text-xs font-semibold"
-                      >{{ isActive(category) ? 'Activa' : category.status || 'Sin estado' }}</span
+                      >{{ category.status | statusLabel }}</span
                     >
                   </td>
                   <td class="px-5 py-4">
@@ -135,6 +135,9 @@
                           <lucide-icon name="refresh-cw" class="h-3.5 w-3.5"></lucide-icon>
                         </button>
                       } @else {
+                        <button class="btn-action-info" type="button" title="Administrar constantes" (click)="manageConstants(category)" [disabled]="saving()">
+                          <lucide-icon name="ruler" class="h-3.5 w-3.5"></lucide-icon>
+                        </button>
                         <button
                           class="btn-action-info"
                           type="button"

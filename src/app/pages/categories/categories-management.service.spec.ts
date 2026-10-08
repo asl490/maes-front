@@ -3,11 +3,16 @@ import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 import { CategoriesService } from '../../core/api/generated/api/categories.service';
 import { CategoriesManagementService } from './categories-management.service';
+import { ImageStorageService } from '../../shared/image-storage/image-storage.service';
 
 describe('CategoriesManagementService', () => {
   const api = { categoryGetAllFilteredPagedByDto: vi.fn(), categoryGetAllPaged: vi.fn(), categoryCreate: vi.fn(), categoryUpdate: vi.fn(), categoryDelete: vi.fn() };
+  const images = { uploadAndAssign: vi.fn() };
   function createService(): CategoriesManagementService {
-    TestBed.configureTestingModule({ providers: [{ provide: CategoriesService, useValue: api }] });
+    TestBed.configureTestingModule({ providers: [
+      { provide: CategoriesService, useValue: api },
+      { provide: ImageStorageService, useValue: images },
+    ] });
     return TestBed.inject(CategoriesManagementService);
   }
   it('uses the paged endpoint without active filters', () => {

@@ -1,3 +1,4 @@
+import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { FurnitureService } from '../../core/api/generated/api/furniture.service';
@@ -25,9 +26,13 @@ import { UpdateFurnitureComplementaryArticleDTO } from '../../core/api/generated
 import { UpdateFurnitureMelaminePieceDTO } from '../../core/api/generated/model/updateFurnitureMelaminePieceDTO';
 import { FurnitureCalculationRequest } from '../../core/api/generated/model/furnitureCalculationRequest';
 import { FurnitureCalculationResponse } from '../../core/api/generated/model/furnitureCalculationResponse';
+import { EffectiveFurnitureConstantDTO } from '../../core/api/generated/model/effectiveFurnitureConstantDTO';
+import { Configuration } from '../../core/api/generated/configuration';
 
 @Injectable({ providedIn: 'root' })
 export class FurnitureConfigurationService {
+  private readonly http = inject(HttpClient);
+  private readonly configuration = inject(Configuration);
   private readonly furnitureApi = inject(FurnitureService);
   private readonly furnitureParametersApi = inject(FurnitureParametersService);
   private readonly furnitureConstantsApi = inject(FurnitureConstantsService);
@@ -66,6 +71,12 @@ export class FurnitureConfigurationService {
 
   listConstants(furnitureId: number): Observable<FurnitureConstantDTO[]> {
     return this.furnitureConstantsApi.furnitureConstantGetAllByFurnitureId(furnitureId);
+  }
+
+  listEffectiveConstants(furnitureId: number): Observable<EffectiveFurnitureConstantDTO[]> {
+    return this.http.get<EffectiveFurnitureConstantDTO[]>(
+      `${this.configuration.basePath}/furniture-constants/effective/by-furniture/${furnitureId}`,
+    );
   }
 
   createConstant(payload: CreateFurnitureConstantDTO): Observable<FurnitureConstantDTO> {

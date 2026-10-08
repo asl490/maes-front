@@ -1,7 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
 
@@ -24,6 +24,7 @@ export class Login {
   constructor(
     private auth: AuthService,
     private router: Router,
+    private route: ActivatedRoute,
   ) {}
 
   get username() {
@@ -60,7 +61,8 @@ export class Login {
           Boolean(this.form.value.rememberMe),
         ),
       );
-      await this.router.navigate(['/app/dashboard']);
+      const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
+      await this.router.navigateByUrl(returnUrl?.startsWith('/') ? returnUrl : '/app/dashboard');
     } catch (error: unknown) {
       this.showSplash.set(false);
       this.serverError.set(this.authErrorMessage(error));

@@ -88,5 +88,11 @@ export const routes: Routes = [
     path: 'demo',
     loadComponent: () => import('./pages/demo/demo').then((m) => m.Demo),
   },
+  {
+    path: 'catalogo',
+    loadComponent: () =>
+      import('./pages/customer-catalog/customer-catalog').then((m) => m.CustomerCatalog),
+    canActivate: [authGuard],
+  },
   { path: '**', redirectTo: '' },
 ];

@@ -161,7 +161,7 @@ export class FurniturePieceEditModal {
       const tokens = formula.match(/[A-Za-z_][A-Za-z0-9_]*/g) ?? [];
       const unknown = tokens.find((token) => !known.has(token.toUpperCase()));
       if (unknown)
-        return `La variable ${unknown} no pertenece a los parámetros o constantes del mueble.`;
+        return `La variable ${unknown} no pertenece a los parámetros ni a las constantes efectivas del mueble o su categoría.`;
     }
     return '';
   }

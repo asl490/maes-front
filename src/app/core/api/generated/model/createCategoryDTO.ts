@@ -10,6 +10,7 @@
 
 
 export interface CreateCategoryDTO { 
+    code: string;
     name?: string;
     description?: string;
     status?: string;

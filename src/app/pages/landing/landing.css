@@ -1,0 +1,13 @@
+:host { display: block; }
+.landing-page { color: #0f172a; }
+.landing-page :is(app-solution, app-steps, app-benefits, app-features, app-gallery, app-comparison, app-sponsors, app-placacentro) { display: block; scroll-margin-top: 5rem; }
+.skip-link { position: fixed; left: 1rem; top: -5rem; z-index: 100; border-radius: .75rem; background: white; padding: .75rem 1rem; color: #0f172a; font-weight: 700; transition: top .2s ease; }
+.skip-link:focus { top: 1rem; }
+.nav-item { border-radius: .65rem; padding: .65rem .8rem; color: #cbd5e1; font-size: .875rem; font-weight: 700; text-decoration: none; transition: .2s ease; }
+.nav-item:hover,.nav-item:focus-visible { background: rgba(255,255,255,.1); color: white; }
+.nav-item:focus-visible,.menu-button:focus-visible { outline: 3px solid rgba(239,35,60,.45); outline-offset: 3px; }
+.menu-button { display: inline-flex; height: 2.75rem; width: 2.75rem; align-items: center; justify-content: center; border: 1px solid #475569; border-radius: .75rem; background: #334155; color: white; box-shadow: 0 4px 14px rgba(15,23,42,.18); }
+.menu-button svg { height: 1.35rem; width: 1.35rem; fill: none; stroke: currentColor; stroke-linecap: round; stroke-width: 2; }
+.mobile-nav { position: absolute; inset: 5rem 0 auto; border-top: 1px solid #475569; background: rgba(30,41,59,.98); padding: 1rem; box-shadow: 0 1.25rem 2rem rgba(15,23,42,.25); }
+.mobile-nav > a,.mobile-nav div a { display: flex; border-radius: .75rem; padding: .75rem 1rem; color: #cbd5e1; font-size: .9375rem; font-weight: 700; text-decoration: none; }
+.mobile-nav > a:hover,.mobile-nav > a:focus-visible { background: rgba(255,255,255,.1); color: white; }
