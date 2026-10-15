@@ -26,7 +26,7 @@ describe('CategoriesManagementService', () => {
     expect(api.categoryGetAllFilteredPagedByDto).toHaveBeenCalledWith({ name: 'Cocina', status: 'ACTIVE' }, 0, 10);
   });
   it('delegates create, update and delete', () => {
-    const category = { name: 'Cocina', description: 'Muebles de cocina', status: 'ACTIVE' };
+    const category = { code: 'COC', name: 'Cocina', description: 'Muebles de cocina', status: 'ACTIVE' };
     api.categoryCreate.mockReturnValue(of({ id: 1 })); api.categoryUpdate.mockReturnValue(of({ id: 1 })); api.categoryDelete.mockReturnValue(of(undefined));
     const service = createService(); service.create(category).subscribe(); service.update(1, category).subscribe(); service.delete(1).subscribe();
     expect(api.categoryCreate).toHaveBeenCalledWith(category); expect(api.categoryUpdate).toHaveBeenCalledWith(1, category); expect(api.categoryDelete).toHaveBeenCalledWith(1);

@@ -79,6 +79,10 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'melamine-colors',
+        loadComponent: () => import('./pages/melamine-colors/melamine-colors').then((m) => m.MelamineColors),
+      },
+      {
         path: 'settings',
         loadComponent: () => import('./pages/settings/settings').then((m) => m.Settings),
       },

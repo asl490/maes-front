@@ -38,7 +38,7 @@ export class Categories {
   readonly page = signal(1);
   readonly pageSize = signal(10);
   readonly total = signal(0);
-  readonly filters = signal<FiltersCategoryDTO>({});
+  readonly filters = signal<FiltersCategoryDTO>({ status: 'ACTIVE' });
   readonly activeCount = computed(
     () =>
       this.categories().filter((category) => category.status?.toUpperCase() === 'ACTIVE').length,
@@ -53,7 +53,7 @@ export class Categories {
     this.load();
   }
   clearFilters(): void {
-    this.filters.set({});
+    this.filters.set({ status: 'ACTIVE' });
     this.page.set(1);
     this.load();
   }

@@ -1,7 +1,7 @@
-import { Component, signal, output, input } from '@angular/core';
+import { NgTemplateOutlet } from '@angular/common';
+import { Component, input, output, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
-import { NgTemplateOutlet } from '@angular/common';
 
 export interface NavGrandChild {
   label: string;
@@ -51,7 +51,13 @@ export class Sidebar {
       title: 'Principal',
       items: [
         { label: 'Inicio', route: '/app/dashboard', icon: 'dashboard' },
-        { label: 'Nuevo diseño', route: '/demo', icon: 'charts', badge: 'Demo', badgeType: 'violet' },
+        {
+          label: 'Nuevo diseño',
+          route: '/demo',
+          icon: 'charts',
+          badge: 'Demo',
+          badgeType: 'violet',
+        },
       ],
     },
     {
@@ -68,9 +74,14 @@ export class Sidebar {
         { label: 'Categorías', route: '/app/categories', icon: 'categories' },
         { label: 'Subcategorías', route: '/app/subcategories', icon: 'subcategories' },
         { label: 'Muebles', route: '/app/furniture', icon: 'furniture' },
+        { label: 'Melaminas', route: '/app/melamine-colors', icon: 'melamine-colors' },
         { label: 'Parámetros', route: '/app/parameters', icon: 'parameters' },
-        { label: 'Constantes del sistema', route: '/app/system-constants', icon: 'system-constants' },
-        { label: 'Artículos complementarios', route: '/app/complementary-articles', icon: 'complementary-articles' },
+        // { label: 'Constantes del sistema', route: '/app/system-constants', icon: 'system-constants' },
+        {
+          label: 'Artículos complementarios',
+          route: '/app/complementary-articles',
+          icon: 'complementary-articles',
+        },
       ],
     },
     {

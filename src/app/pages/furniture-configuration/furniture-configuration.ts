@@ -38,6 +38,8 @@ import {
   FurnitureParameterEditModal,
   FurnitureParameterFormValue,
 } from './furniture-parameter-edit.modal';
+import { FurnitureAssetEditModal } from './furniture-asset-edit.modal';
+import { FurnitureAsset, FurnitureAssetsService, FurnitureAssetUpload } from './furniture-assets.service';
 
 @Component({
   selector: 'app-furniture-configuration',
@@ -51,6 +53,7 @@ export class FurnitureConfiguration {
   private readonly modal = inject(ModalService);
   private readonly alert = inject(AlertService);
   private readonly cd = inject(ChangeDetectorRef);
+  private readonly assetService = inject(FurnitureAssetsService);
   readonly furnitureId = Number(this.route.snapshot.paramMap.get('id'));
   readonly furniture = signal<FurnitureDTO | null>(null);
   readonly parameters = signal<FurnitureParameterDTO[]>([]);
@@ -60,10 +63,11 @@ export class FurnitureConfiguration {
   readonly articleCatalog = signal<ComplementaryArticleDTO[]>([]);
   readonly pieces = signal<FurnitureMelaminePieceDTO[]>([]);
   readonly catalog = signal<ParameterDTO[]>([]);
+  readonly assets = signal<FurnitureAsset[]>([]);
   readonly loading = signal(true);
   readonly saving = signal(false);
   readonly error = signal('');
-  readonly activeSection = signal<'parameters' | 'constants' | 'pieces' | 'articles'>('parameters');
+  readonly activeSection = signal<'parameters' | 'constants' | 'pieces' | 'articles' | 'assets'>('parameters');
   readonly availableParameters = computed(() => {
     const assigned = new Set(this.parameters().map((item) => item.parameter?.id));
     return this.catalog().filter((item) => item.id && !assigned.has(item.id));
@@ -94,8 +98,47 @@ export class FurnitureConfiguration {
     });
   }
 
-  showSection(section: 'parameters' | 'constants' | 'pieces' | 'articles'): void {
+  showSection(section: 'parameters' | 'constants' | 'pieces' | 'articles' | 'assets'): void {
     this.activeSection.set(section);
+  }
+
+  addAsset(): void {
+    const ref = this.modal.open<FurnitureAssetEditModal, FurnitureAssetUpload>(FurnitureAssetEditModal, { size: 'lg' });
+    ref.closed.subscribe((value) => {
+      if (!value) return;
+      this.saving.set(true);
+      this.alert.loading('Subiendo archivo...');
+      this.assetService.upload(this.furnitureId, value).pipe(finalize(() => this.saving.set(false))).subscribe({
+        next: () => { this.alert.close(); this.alert.success('Archivo agregado'); this.load(); },
+        error: (error) => { this.alert.close(); this.setError(error); },
+      });
+    });
+  }
+
+  async removeAsset(asset: FurnitureAsset): Promise<void> {
+    if (!(await this.alert.confirmDelete(asset.title ?? asset.filename, 'el archivo del mueble'))) return;
+    this.saving.set(true);
+    this.alert.loading('Eliminando archivo...');
+    this.assetService.delete(this.furnitureId, asset.id).pipe(finalize(() => this.saving.set(false))).subscribe({
+      next: () => { this.alert.close(); this.alert.success('Archivo eliminado'); this.load(); },
+      error: (error) => { this.alert.close(); this.setError(error); },
+    });
+  }
+
+  markAssetPrimary(asset: FurnitureAsset): void {
+    if (asset.isPrimary) return;
+    this.saving.set(true);
+    this.assetService.update(this.furnitureId, asset, { isPrimary: true })
+      .pipe(finalize(() => this.saving.set(false)))
+      .subscribe({ next: () => { this.alert.success('Archivo principal actualizado'); this.load(); }, error: (error) => this.setError(error) });
+  }
+
+  assetTypeLabel(type: string): string {
+    return ({ PRODUCT_IMAGE: 'Imagen', TECHNICAL_PLAN: 'Plano técnico', COLOR_MASK: 'Máscara de color', ASSEMBLY_DIAGRAM: 'Diagrama de armado' } as Record<string, string>)[type] ?? type;
+  }
+
+  assetViewLabel(view: string): string {
+    return ({ FRONT: 'Frontal', BACK: 'Posterior', LEFT: 'Lateral izquierda', RIGHT: 'Lateral derecha', TOP: 'Superior', PERSPECTIVE: 'Perspectiva', INTERIOR: 'Interior', DETAIL: 'Detalle', NONE: 'Sin vista' } as Record<string, string>)[view] ?? view;
   }
 
   addParameter(): void {
@@ -354,10 +397,11 @@ export class FurnitureConfiguration {
       articleCatalog: this.management.listArticleCatalog(),
       pieces: this.management.listPieces(this.furnitureId),
       catalog: this.management.listParameterCatalog(),
+      assets: this.assetService.list(this.furnitureId),
     })
       .pipe(finalize(() => this.loading.set(false)))
       .subscribe({
-        next: ({ furniture, parameters, constants, effectiveConstants, articles, articleCatalog, pieces, catalog }) => {
+        next: ({ furniture, parameters, constants, effectiveConstants, articles, articleCatalog, pieces, catalog, assets }) => {
           this.furniture.set(furniture);
           this.parameters.set(parameters);
           this.constants.set(constants);
@@ -366,6 +410,7 @@ export class FurnitureConfiguration {
           this.articleCatalog.set(articleCatalog);
           this.pieces.set(pieces);
           this.catalog.set(catalog);
+          this.assets.set(assets);
           this.cd.markForCheck();
         },
         error: (error) => this.setError(error),

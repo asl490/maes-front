@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { FurnitureParameterDTO } from '../../../../core/api/generated/model/furnitureParameterDTO';
 import { DemoDimensions, FurnitureModel, FurnitureType } from '../../models/demo-selection.model';
 
 interface DimensionField {
@@ -44,11 +45,14 @@ export class StepDimensionsComponent {
   }
 
   @Input() dimensions: DemoDimensions = { width: null, height: null, depth: null };
+  @Input() parameters: FurnitureParameterDTO[] | null = null;
+  @Input() parametersLoading = false;
+  @Input() parametersError = '';
   @Output() dimensionsChanged = new EventEmitter<DemoDimensions>();
   @Output() next = new EventEmitter<void>();
   @Output() back = new EventEmitter<void>();
 
-  dimensionFields: DimensionField[] = [
+  private readonly defaultDimensionFields: DimensionField[] = [
     {
       key: 'width',
       label: 'Ancho',
@@ -78,6 +82,20 @@ export class StepDimensionsComponent {
     },
   ];
 
+  get dimensionFields(): DimensionField[] {
+    if (!this.parameters?.length) return this.defaultDimensionFields;
+    return this.defaultDimensionFields.map((field) => {
+      const parameter = this.findDimensionParameter(field.key);
+      if (!parameter) return field;
+      return {
+        ...field,
+        placeholder: parameter.defaultValue !== undefined ? `Ej: ${parameter.defaultValue}` : field.placeholder,
+        min: parameter.minValue ?? 0,
+        max: parameter.maxValue ?? Number.MAX_SAFE_INTEGER,
+      };
+    });
+  }
+
   isFieldValid(field: DimensionField): boolean {
     const val = this.dimensions[field.key];
     if (val === null || val === undefined) return true; // not invalid if empty
@@ -85,6 +103,7 @@ export class StepDimensionsComponent {
   }
 
   isComplete(): boolean {
+    if (this.parametersLoading || this.parametersError) return false;
     const wOk =
       this.dimensions.width !== null &&
       this.dimensions.width >= this.dimensionFields[0].min &&
@@ -110,5 +129,22 @@ export class StepDimensionsComponent {
 
   onBack(): void {
     this.back.emit();
+  }
+
+  private findDimensionParameter(key: keyof DemoDimensions): FurnitureParameterDTO | undefined {
+    const aliases: Record<keyof DemoDimensions, string[]> = {
+      width: ['w', 'ancho', 'width'],
+      height: ['h', 'alto', 'altura', 'height'],
+      depth: ['d', 'profundidad', 'depth'],
+    };
+    return this.parameters?.find((parameter) => {
+      const abbreviation = this.normalize(parameter.parameter?.abbreviation ?? '');
+      const name = this.normalize(parameter.parameter?.name ?? '');
+      return aliases[key].some((alias) => abbreviation === alias || name === alias || name.includes(alias));
+    });
+  }
+
+  private normalize(value: string): string {
+    return value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim().toLowerCase();
   }
 }

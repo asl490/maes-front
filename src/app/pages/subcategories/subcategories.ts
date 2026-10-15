@@ -39,7 +39,7 @@ export class Subcategories {
   readonly page = signal(1);
   readonly pageSize = signal(10);
   readonly total = signal(0);
-  readonly filters = signal<FiltersSubcategoryDTO>({});
+  readonly filters = signal<FiltersSubcategoryDTO>({ status: 'ACTIVE' });
   readonly activeCount = computed(
     () => this.subcategories().filter((item) => item.status?.toUpperCase() === 'ACTIVE').length,
   );
@@ -55,7 +55,7 @@ export class Subcategories {
     this.load();
   }
   clearFilters(): void {
-    this.filters.set({});
+    this.filters.set({ status: 'ACTIVE' });
     this.page.set(1);
     this.load();
   }

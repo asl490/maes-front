@@ -1,6 +1,7 @@
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { LucideAngularModule } from 'lucide-angular';
 import { CategoryDTO } from '../../core/api/generated/model/categoryDTO';
 import { ModalComponent } from '../../shared/modal/modal.component';
 
@@ -8,7 +9,7 @@ export interface SubcategoryFormValue { category: number; name: string; descript
 export interface SubcategoryModalData extends Partial<SubcategoryFormValue> { mode: 'create' | 'edit'; categories: CategoryDTO[]; imageUrl?: string; }
 
 @Component({
-  selector: 'app-subcategory-edit-modal', imports: [ReactiveFormsModule, ModalComponent], styleUrl: '../../shared/admin-feature.css',
+  selector: 'app-subcategory-edit-modal', imports: [ReactiveFormsModule, ModalComponent, LucideAngularModule], styleUrl: '../../shared/admin-feature.css',
   template: `
     <app-modal [title]="data.mode === 'create' ? 'Crear subcategoría' : 'Editar subcategoría'">
       <form [formGroup]="form" class="space-y-4" (ngSubmit)="save()">
@@ -17,8 +18,19 @@ export interface SubcategoryModalData extends Partial<SubcategoryFormValue> { mo
         <div><label class="mb-1.5 block text-xs font-medium text-muted">Descripción</label><textarea class="input min-h-24 resize-y" formControlName="description"></textarea></div>
         <div>
           <label class="mb-1.5 block text-xs font-medium text-muted">Imagen</label>
-          @if (previewUrl()) { <img [src]="previewUrl()" alt="Vista previa" class="mb-3 h-32 w-full rounded-lg object-cover" /> }
-          <input class="input" type="file" accept="image/jpeg,image/png,image/webp" (change)="selectImage($event)" />
+          @if (previewUrl()) {
+            <div class="mb-3 overflow-hidden rounded-xl border border-slate-200 bg-slate-50 p-3">
+              <img [src]="previewUrl()" alt="Vista previa completa de la imagen" class="mx-auto max-h-80 w-full object-contain" />
+            </div>
+          }
+          <label class="group flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-slate-300 bg-slate-50 px-5 py-5 text-center transition hover:border-red-400 hover:bg-red-50/40">
+            <input class="sr-only" type="file" accept="image/jpeg,image/png,image/webp" (change)="selectImage($event)" />
+            <span class="flex h-10 w-10 items-center justify-center rounded-full bg-white text-slate-500 shadow-sm transition group-hover:text-red-600">
+              <lucide-icon name="upload" [size]="20" />
+            </span>
+            <span class="mt-2 max-w-full truncate text-sm font-semibold text-slate-700">{{ selectedFileName() || (previewUrl() ? 'Cambiar imagen' : 'Seleccionar imagen') }}</span>
+            <span class="mt-1 text-xs text-slate-500">{{ selectedFileName() ? 'Haz clic para seleccionar otro archivo' : 'Haz clic para buscar una imagen' }}</span>
+          </label>
           <p class="mt-1 text-xs text-muted">JPG, PNG o WebP. Máximo 10 MB.</p>
           @if (imageError()) { <p class="mt-1 text-xs text-red-600">{{ imageError() }}</p> }
         </div>
@@ -33,6 +45,7 @@ export class SubcategoryEditModal {
   private readonly formBuilder = inject(FormBuilder);
   readonly data = inject<SubcategoryModalData>(DIALOG_DATA);
   readonly previewUrl = signal(this.data.imageUrl ?? '');
+  readonly selectedFileName = signal('');
   readonly imageError = signal('');
   private image?: File;
   readonly form = this.formBuilder.nonNullable.group({
@@ -46,12 +59,13 @@ export class SubcategoryEditModal {
     this.imageError.set('');
     if (!file) return;
     if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
-      this.imageError.set('Selecciona una imagen JPG, PNG o WebP.'); input.value = ''; return;
+      this.imageError.set('Selecciona una imagen JPG, PNG o WebP.'); this.selectedFileName.set(''); input.value = ''; return;
     }
     if (file.size > 10 * 1024 * 1024) {
-      this.imageError.set('La imagen no puede superar los 10 MB.'); input.value = ''; return;
+      this.imageError.set('La imagen no puede superar los 10 MB.'); this.selectedFileName.set(''); input.value = ''; return;
     }
     this.image = file;
+    this.selectedFileName.set(file.name);
     const reader = new FileReader();
     reader.onload = () => this.previewUrl.set(String(reader.result ?? ''));
     reader.readAsDataURL(file);

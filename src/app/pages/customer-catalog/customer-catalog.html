@@ -50,8 +50,8 @@
         <div class="wizard-context"><button type="button" (click)="goToCatalog()">← Volver al catálogo</button><div><span>Personalizando</span><strong>{{ selection.model?.name }}</strong></div></div>
         @switch (currentStep()) {
           @case (2) { <app-step-color [selectedModel]="selection.model" [selectedColor]="selection.color" (colorSelected)="onColorSelected($event)" (next)="nextStep()" (back)="prevStep()" /> }
-          @case (3) { <app-step-dimensions [furnitureType]="selection.furnitureType" [selectedModel]="selection.model" [dimensions]="selection.dimensions" (dimensionsChanged)="onDimensionsChanged($event)" (next)="nextStep()" (back)="prevStep()" /> }
-          @case (4) { <app-step-summary [selection]="selection" (reset)="reset()" /> }
+          @case (3) { <app-step-dimensions [furnitureType]="selection.furnitureType" [selectedModel]="selection.model" [dimensions]="selection.dimensions" [parameters]="furnitureParameters()" [parametersLoading]="parametersLoading()" [parametersError]="parametersError()" (dimensionsChanged)="onDimensionsChanged($event)" (next)="nextStep()" (back)="prevStep()" /> }
+          @case (4) { <app-step-summary [selection]="selection" [furnitureId]="selectedFurnitureId()" (reset)="reset()" /> }
         }
       </section>
     }

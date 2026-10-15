@@ -47,6 +47,11 @@ import {
   Armchair,
   Settings2,
   Ruler,
+  Upload,
+  FileText,
+  Star,
+  ExternalLink,
+  Images,
 } from 'lucide-angular';
 import { routes } from './app.routes';
 import { provideApi } from './core/api/generated/provide-api';
@@ -110,6 +115,11 @@ export const appConfig: ApplicationConfig = {
         Armchair,
         Settings2,
         Ruler,
+        Upload,
+        FileText,
+        Star,
+        ExternalLink,
+        Images,
       }),
     },
   ],

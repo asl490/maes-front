@@ -3,12 +3,12 @@
   <!-- Info + page size -->
   <div class="flex items-center gap-3">
     <p class="text-xs text-muted">
-      Showing <span class="font-medium text-primary">{{ from() }}</span>–<span class="font-medium text-primary">{{ to() }}</span>
-      of <span class="font-medium text-primary">{{ total() }}</span> results
+      Mostrando <span class="font-medium text-primary">{{ from() }}</span>–<span class="font-medium text-primary">{{ to() }}</span>
+      de <span class="font-medium text-primary">{{ total() }}</span> resultados
     </p>
     <div class="w-px h-4" style="background:var(--border);"></div>
     <div class="flex items-center gap-1.5">
-      <span class="text-xs text-muted">Rows</span>
+      <span class="text-xs text-muted">Filas</span>
       <select class="input text-xs py-1" style="width:auto; padding:0.25rem 0.5rem;"
         [value]="pageSize()" (change)="onPageSizeChange($event)">
         @for (s of pageSizes(); track s) {

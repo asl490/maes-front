@@ -40,7 +40,7 @@ export class Furniture {
   readonly page = signal(1);
   readonly pageSize = signal(10);
   readonly total = signal(0);
-  readonly filters = signal<FiltersFurnitureDTO>({});
+  readonly filters = signal<FiltersFurnitureDTO>({ status: 'ACTIVE' });
   readonly activeCount = computed(
     () => this.furniture().filter((item) => item.status?.toUpperCase() === 'ACTIVE').length,
   );
@@ -56,7 +56,7 @@ export class Furniture {
     this.load();
   }
   clearFilters(): void {
-    this.filters.set({});
+    this.filters.set({ status: 'ACTIVE' });
     this.page.set(1);
     this.load();
   }

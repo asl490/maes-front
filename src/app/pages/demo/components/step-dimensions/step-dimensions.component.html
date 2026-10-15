@@ -9,13 +9,15 @@
   <div class="dimensions-layout">
     <!-- Formulario -->
     <div class="dimensions-form">
+      <p class="field-hint" *ngIf="parametersLoading">Cargando rangos permitidos para este mueble...</p>
+      <p class="field-hint error-text" *ngIf="parametersError">{{ parametersError }}</p>
       <div class="field-group" *ngFor="let field of dimensionFields">
         <label class="field-label" [for]="'dim-' + field.key">
           <span class="field-icon">{{ field.icon }}</span>
           {{ field.label }}
         </label>
         <div class="field-input-wrapper" [class.invalid]="!isFieldValid(field)">
-          <input [id]="'dim-' + field.key" type="number" class="field-input"
+          <input [id]="'dim-' + field.key" type="number" class="field-input" [disabled]="parametersLoading || !!parametersError"
             [class.has-value]="dimensions[field.key] !== null && dimensions[field.key] !== undefined"
             [placeholder]="field.placeholder" [(ngModel)]="dimensions[field.key]" [min]="field.min" [max]="field.max"
             (ngModelChange)="onDimensionChange()" />

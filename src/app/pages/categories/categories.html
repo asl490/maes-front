@@ -57,7 +57,7 @@
       <button
         class="btn-secondary"
         type="button"
-        (click)="filterName.value = ''; filterStatus.value = ''; clearFilters()"
+        (click)="filterName.value = ''; filterStatus.value = 'ACTIVE'; clearFilters()"
       >
         Limpiar
       </button>
@@ -181,7 +181,7 @@
         [page]="page()"
         [pageSize]="pageSize()"
         [total]="total()"
-        [pageSizes]="[5, 10, 25]"
+        [pageSizes]="[10, 25, 50]"
         (pageChange)="changePage($event)"
         (pageSizeChange)="changePageSize($event)"
       />

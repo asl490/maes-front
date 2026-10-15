@@ -1,5 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
+import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
+import { finalize, switchMap } from 'rxjs';
+import { FurnitureCalculationResponse } from '../../../../core/api/generated/model/furnitureCalculationResponse';
+import { FurnitureParameterDTO } from '../../../../core/api/generated/model/furnitureParameterDTO';
+import { FurnitureConfigurationService } from '../../../furniture-configuration/furniture-configuration.service';
 import { DemoSelection } from '../../models/demo-selection.model';
 
 @Component({
@@ -10,8 +15,17 @@ import { DemoSelection } from '../../models/demo-selection.model';
   styleUrls: ['./step-summary.component.css'],
 })
 export class StepSummaryComponent {
+  private readonly furnitureConfiguration = inject(FurnitureConfigurationService);
   @Input() selection!: DemoSelection;
+  @Input() furnitureId: number | null = null;
   @Output() reset = new EventEmitter<void>();
+
+  showDespiece = false;
+  calculating = false;
+  calculationError = '';
+  despieceMelamina: any[] = [];
+  despieceMdf: any[] = [];
+  materialesExtra: any[] = [];
 
   get modelPreviewUrls(): string[] {
     const { model, color } = this.selection;
@@ -22,227 +36,86 @@ export class StepSummaryComponent {
         `/furniture/models/r_clasico_${color.id}_c.webp`,
       ];
     }
-    if (model?.imageUrl) {
-      const base = model.imageUrl.startsWith('/') ? model.imageUrl : `/${model.imageUrl}`;
-      return [base];
-    }
-    return [];
+    return model?.imageUrl ? [model.imageUrl.startsWith('/') ? model.imageUrl : `/${model.imageUrl}`] : [];
   }
 
   get whatsappUrl(): string {
     const { furnitureType, model, color, dimensions } = this.selection;
     const msg = encodeURIComponent(
       `Hola, me interesa cotizar un mueble con Maes IA:\n\n` +
-        `🪑 Tipo: ${furnitureType?.name}\n` +
-        `📐 Modelo: ${model?.name}\n` +
-        `🎨 Color: ${color?.name}\n` +
+        `🪑 Tipo: ${furnitureType?.name}\n📐 Modelo: ${model?.name}\n🎨 Color: ${color?.name}\n` +
         `📏 Medidas: ${dimensions.width}mm × ${dimensions.height}mm × ${dimensions.depth}mm\n\n` +
         `Por favor, ¿pueden enviarme la cotización?`,
     );
     return `https://wa.me/51914497074?text=${msg}`;
   }
 
-  onReset(): void {
-    this.reset.emit();
-  }
-
-  // --- LÓGICA DE DESPIECE ---
-  showDespiece = false;
-  despieceMelamina: any[] = [];
-  despieceMdf: any[] = [];
-  materialesExtra: any[] = [];
+  onReset(): void { this.reset.emit(); }
 
   generarDespiece(): void {
-    if (this.selection.model?.id !== 'ropero-2p') {
+    if (!this.furnitureId) {
+      this.calculationError = 'No se pudo identificar el mueble seleccionado.';
       return;
     }
+    this.calculating = true;
+    this.calculationError = '';
+    this.showDespiece = false;
+    this.furnitureConfiguration.listParameters(this.furnitureId).pipe(
+      switchMap((parameters) => this.furnitureConfiguration.calculate({
+        furniture: this.furnitureId!,
+        values: parameters.filter((parameter) => parameter.id).map((parameter) => ({
+          furnitureParameter: parameter.id!,
+          value: this.valueForParameter(parameter),
+        })),
+      })),
+      finalize(() => this.calculating = false),
+    ).subscribe({
+      next: (response) => this.applyCalculation(response),
+      error: (error) => this.calculationError = this.errorMessage(error),
+    });
+  }
 
-    const W = this.selection.dimensions.width || 0;
-    const H = this.selection.dimensions.height || 0;
-    const D = this.selection.dimensions.depth || 0;
+  private valueForParameter(parameter: FurnitureParameterDTO): number {
+    const key = this.normalize(`${parameter.parameter?.abbreviation ?? ''} ${parameter.parameter?.name ?? ''}`);
+    if (/^(w|ancho|width)( |$)/.test(key) || key.includes(' ancho')) return this.selection.dimensions.width!;
+    if (/^(h|alto|altura|height)( |$)/.test(key) || key.includes(' alto') || key.includes(' altura')) return this.selection.dimensions.height!;
+    if (/^(d|profundidad|depth)( |$)/.test(key) || key.includes(' profundidad')) return this.selection.dimensions.depth!;
+    return parameter.defaultValue ?? parameter.minValue ?? 0;
+  }
 
-    // Constantes
-    const ESPESOR_MELAMINA = 18;
-    const ZOCALO_ALTURA = 100;
-
-    // Fórmulas de Ancho
-    const anchoAmarre = W - ESPESOR_MELAMINA * 2;
-    const anchoZocalo = W - ESPESOR_MELAMINA * 2;
-    const anchoMdf = W - 1;
-    const anchoPuerta = W - 8;
-
-    // Fórmulas de Largo (provisionales, coinciden con la muestra)
-    // El usuario proveerá las reales posteriormente
-    const largoLateralTecho = 400;
-    const largoLateralCuerpo = 1854;
-    const largoPuertaSuperior = 401;
-    const largoPuertaCuerpo = 1837;
-    const largoMdfSuperior = 399;
-    const largoMdfCuerpo = 1853;
-
-    this.despieceMelamina = [
-      {
-        id: 1,
-        descripcion: this.selection.color?.name,
-        color: 'Cuerpo',
-        categoria: 'Lateral',
-        largo: largoLateralCuerpo + ZOCALO_ALTURA,
-        anchura: D,
-        cantidad: 2,
-        veta: 'si',
-        l1: 'D',
-        l2: '',
-        d1: 'D',
-        d2: 'D',
-        aux1: '',
-        aux2: '',
-      },
-      {
-        id: 2,
-        descripcion: this.selection.color?.name,
-        color: 'Cuerpo',
-        categoria: 'Amarre',
-        largo: W - 2 * ESPESOR_MELAMINA,
-        anchura: D,
-        cantidad: 5,
-        veta: 'si',
-        l1: 'D',
-        l2: '',
-        d1: '',
-        d2: '',
-        aux1: '',
-        aux2: '',
-      },
-      {
-        id: 3,
-        descripcion: this.selection.color?.name,
-        color: 'Zocalo',
-        categoria: 'Zocalo',
-        largo: W - 2 * ESPESOR_MELAMINA,
-        anchura: ZOCALO_ALTURA,
-        cantidad: 2,
-        veta: 'si',
-        l1: 'D',
-        l2: '',
-        d1: '',
-        d2: '',
-        aux1: '',
-        aux2: '',
-      },
-      {
-        id: 4,
-        descripcion: this.selection.color?.name,
-        color: 'Techo',
-        categoria: 'Lateral',
-        largo: H - (largoLateralCuerpo + ZOCALO_ALTURA),
-        anchura: D,
-        cantidad: 2,
-        veta: 'si',
-        l1: 'D',
-        l2: '',
-        d1: 'D',
-        d2: 'D',
-        aux1: '',
-        aux2: '',
-      },
-      {
-        id: 5,
-        descripcion: this.selection.color?.name,
-        color: 'Techo',
-        categoria: 'Amarre',
-        largo: W - 2 * ESPESOR_MELAMINA,
-        anchura: D,
-        cantidad: 1,
-        veta: 'si',
-        l1: 'D',
-        l2: '',
-        d1: '',
-        d2: '',
-        aux1: '',
-        aux2: '',
-      },
-      {
-        id: 6,
-        descripcion: this.selection.color?.name,
-        color: 'Puerta',
-        categoria: 'Superior',
-        largo: H - largoLateralCuerpo - ZOCALO_ALTURA - 8 + ESPESOR_MELAMINA / 2,
-        anchura: W - 8,
-        cantidad: 1,
-        veta: 'si',
-        l1: 'G',
-        l2: 'G',
-        d1: 'G',
-        d2: 'G',
-        aux1: '',
-        aux2: 'BIS2HL',
-      },
-      {
-        id: 7,
-        descripcion: this.selection.color?.name,
-        color: 'Puerta',
-        categoria: 'Cuerpo',
-        largo: largoLateralCuerpo - 8 - ESPESOR_MELAMINA / 2,
-        anchura: W - 8,
-        cantidad: 1,
-        veta: 'si',
-        l1: 'G',
-        l2: 'G',
-        d1: 'G',
-        d2: 'G',
-        aux1: '',
-        aux2: 'BIS3HL',
-      },
-    ];
-
-    this.despieceMdf = [
-      {
-        id: 1,
-        descripcion: 'MDF',
-        color: 'Superior',
-        categoria: '',
-        pieza: '',
-        largo: H - largoLateralCuerpo - ZOCALO_ALTURA - 1,
-        anchura: anchoMdf,
-        cantidad: 1,
-        veta: '',
-        l1: '',
-        l2: '',
-        d1: '',
-        d2: '',
-        aux1: '',
-        aux2: '',
-      },
-      {
-        id: 2,
-        descripcion: 'MDF',
-        color: 'Cuerpo',
-        categoria: '',
-        pieza: '',
-        largo: largoLateralCuerpo - 1,
-        anchura: anchoMdf,
-        cantidad: 1,
-        veta: '',
-        l1: '',
-        l2: '',
-        d1: '',
-        d2: '',
-        aux1: '',
-        aux2: '',
-      },
-    ];
-
-    this.materialesExtra = [
-      { descripcion: 'Bisagra lateral cangrejo', cantidad: 3, unidad: 'unid' },
-      { descripcion: 'Tornillos 4x50 mm (amarres y zócalo)', cantidad: 100, unidad: 'unid' },
-      { descripcion: 'Tornillos 3.17 mm (bisagras y correderas)', cantidad: 100, unidad: 'unid' },
-      { descripcion: 'Brazo piston', cantidad: 1, unidad: 'unid' },
-      { descripcion: 'Tapatornillo', cantidad: 1, unidad: 'plancha' },
-      { descripcion: 'Canopla pesada', cantidad: 2, unidad: 'unid' },
-      { descripcion: 'Tubos ovalados para colgar ropa', cantidad: 1, unidad: 'metro' },
-      { descripcion: 'Jaladores', cantidad: 2, unidad: 'unid' },
-    ];
-
+  private applyCalculation(response: FurnitureCalculationResponse): void {
+    const pieces = (response.melaminePieces ?? []).map((piece, index) => ({
+      id: piece.templateId ?? index + 1,
+      descripcion: piece.description || this.selection.color?.name || '',
+      color: this.selection.color?.name || '',
+      categoria: piece.category || piece.pieceName || '',
+      largo: piece.length,
+      anchura: piece.width,
+      cantidad: piece.quantity,
+      veta: piece.hasGrain ? 'Sí' : 'No',
+      l1: piece.edgeL1 || '', l2: piece.edgeL2 || '',
+      d1: piece.edgeA1 || '', d2: piece.edgeA2 || '',
+      aux1: piece.auxiliaryValue1 ?? '', aux2: piece.auxiliaryValue2 ?? '',
+    }));
+    this.despieceMdf = pieces.filter((piece) => /mdf|fondo/i.test(`${piece.descripcion} ${piece.categoria}`));
+    this.despieceMelamina = pieces.filter((piece) => !this.despieceMdf.includes(piece));
+    this.materialesExtra = (response.complementaryArticles ?? []).map((article) => ({
+      descripcion: article.name || article.code || 'Accesorio',
+      cantidad: article.quantity,
+      unidad: article.unit || '',
+    }));
     this.showDespiece = true;
+  }
+
+  private normalize(value: string): string {
+    return value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim().toLowerCase();
+  }
+
+  private errorMessage(error: unknown): string {
+    if (error instanceof HttpErrorResponse) {
+      if (error.status === 0) return 'No se pudo conectar con el servidor de cálculo.';
+      if (typeof error.error?.message === 'string') return error.error.message;
+    }
+    return 'No se pudo generar el despiece. Revisa la configuración y las medidas del mueble.';
   }
 }

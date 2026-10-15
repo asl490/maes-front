@@ -10,7 +10,7 @@ export class Paginator {
   page      = input.required<number>();
   pageSize  = input<number>(10);
   total     = input.required<number>();
-  pageSizes = input<number[]>([5, 10, 25, 50]);
+  pageSizes = input<number[]>([10, 25, 50]);
 
   pageChange     = output<number>();
   pageSizeChange = output<number>();

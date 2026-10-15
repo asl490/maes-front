@@ -58,7 +58,7 @@
         class="btn-secondary"
         type="button"
         (click)="
-          fName.value = ''; fCode.value = ''; fSub.value = ''; fStatus.value = ''; clearFilters()
+          fName.value = ''; fCode.value = ''; fSub.value = ''; fStatus.value = 'ACTIVE'; clearFilters()
         "
       >
         Limpiar
@@ -182,7 +182,7 @@
         [page]="page()"
         [pageSize]="pageSize()"
         [total]="total()"
-        [pageSizes]="[5, 10, 25]"
+        [pageSizes]="[10, 25, 50]"
         (pageChange)="changePage($event)"
         (pageSizeChange)="changePageSize($event)"
       />
